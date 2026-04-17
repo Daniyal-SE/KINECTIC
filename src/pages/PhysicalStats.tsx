@@ -19,12 +19,12 @@ const PhysicalStats = () => {
           <span className="font-body font-bold text-[10px] tracking-wider text-kinetic-primary uppercase">
             Step 02 of 05
           </span>
-          <h2 className="text-4xl font-black text-kinetic-on-surface tracking-tight leading-none">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-kinetic-on-surface tracking-tight leading-none">
             BODY
             <br />
             METRICS
           </h2>
-          <p className="text-kinetic-on-surface-variant max-w-[280px]">
+          <p className="text-kinetic-on-surface-variant text-base sm:text-lg max-w-[280px]">
             Precise data drives precise results. Tell us your current stats.
           </p>
         </div>

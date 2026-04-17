@@ -44,11 +44,11 @@ const DifficultySelection = () => {
               Step 03 / 04
             </div>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black text-kinetic-on-surface leading-tight tracking-tighter">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-kinetic-on-surface leading-tight tracking-tighter">
             CHOOSE YOUR <br />{" "}
             <span className="text-kinetic-primary">INTENSITY.</span>
           </h1>
-          <p className="text-kinetic-on-surface-variant text-lg font-medium leading-relaxed max-w-md">
+          <p className="text-kinetic-on-surface-variant text-base sm:text-lg font-medium leading-relaxed max-w-md">
             Select a difficulty level that matches your current kinetic capacity
             and long-term discipline goals.
           </p>

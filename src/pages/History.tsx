@@ -111,11 +111,11 @@ const History = () => {
 
       <main className="flex-1 px-6 pt-4 pb-32 overflow-y-auto min-h-[calc(100vh-200px)]">
         <section className="mb-10">
-          <h2 className="font-headline text-4xl font-black text-kinetic-on-surface mb-2 leading-none uppercase tracking-tighter">
+          <h2 className="font-headline text-3xl sm:text-4xl md:text-5xl font-black text-kinetic-on-surface mb-2 leading-none uppercase tracking-tighter">
             {stats.currentStreak} DAY <br />
             <span className="text-kinetic-primary">VELOCITY</span>
           </h2>
-          <p className="text-kinetic-on-surface-variant font-medium">
+          <p className="text-kinetic-on-surface-variant text-base sm:text-lg font-medium max-w-md">
             Your discipline streak is currently{" "}
             <span className="text-kinetic-primary font-bold">
               {stats.currentStreak} Days

@@ -37,13 +37,13 @@ const PremiumUpgrade = () => {
       <main className="pb-32 pt-6 px-6 max-w-4xl mx-auto">
         {/* Hero Section */}
         <section className="mb-10 text-left">
-          <h1 className="text-4xl md:text-5xl font-black text-[kinetic-on-surface] leading-tight mb-4 tracking-tighter">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[kinetic-on-surface] leading-tight mb-4 tracking-tighter">
             UPGRADE YOUR <br />{" "}
             <span className="text-[kinetic-primary] italic">
               DISCIPLINE SYSTEM
             </span>
           </h1>
-          <p className="text-[kinetic-on-surface-variant] text-lg max-w-md">
+          <p className="text-[kinetic-on-surface-variant] text-base sm:text-lg max-w-md">
             Unlock AI Analysis, Craving Prediction, and more.
           </p>
         </section>

@@ -40,10 +40,10 @@ const NotificationSamples = () => {
           <span className="text-kinetic-primary font-bold tracking-widest text-xs uppercase">
             System Feedback
           </span>
-          <h1 className="text-4xl md:text-5xl font-black text-kinetic-on-surface leading-tight tracking-tighter">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-kinetic-on-surface leading-tight tracking-tighter">
             Status Protocols
           </h1>
-          <p className="text-kinetic-on-surface-variant text-lg max-w-md">
+          <p className="text-kinetic-on-surface-variant text-base sm:text-lg max-w-md">
             Real-time alerts for the disciplined user. Kinetic precision in
             every interaction.
           </p>

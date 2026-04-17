@@ -67,10 +67,10 @@ const CravingControl = () => {
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-black text-kinetic-on-surface mb-4 tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-kinetic-on-surface mb-4 tracking-tight leading-tight">
             Breathe. Stay in control.
           </h1>
-          <p className="text-kinetic-on-surface-variant text-base max-w-[280px] mb-12">
+          <p className="text-kinetic-on-surface-variant text-base sm:text-lg max-w-[280px] mb-12">
             The feeling will pass. Focus on the expansion of your lungs.
           </p>
 

@@ -145,7 +145,7 @@ const Analytics = () => {
           <p className="text-kinetic-primary font-bold tracking-[0.2em] text-[10px] uppercase">
             Real-Time Integration
           </p>
-          <h2 className="text-4xl md:text-5xl font-black text-kinetic-on-surface leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-kinetic-on-surface leading-tight tracking-tight">
             PERFORMANCE
             <br />
             <span className="text-kinetic-primary">ANALYTICS</span>

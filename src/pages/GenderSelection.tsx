@@ -26,16 +26,16 @@ const GenderSelection = () => {
 
   return (
     <div className="bg-kinetic-surface text-kinetic-on-surface min-h-screen flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-md flex flex-col min-h-[751px]">
-        <header className="mb-12">
-          <div className="flex items-center gap-4 mb-8">
-            <h1 className="text-4xl font-black text-kinetic-on-surface tracking-tight">
+      <div className="w-full max-w-md flex flex-col justify-center my-auto min-h-0">
+        <header className="mb-10 sm:mb-12">
+          <div className="flex items-center gap-4 mb-6 sm:mb-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-kinetic-on-surface tracking-tight leading-tight">
               TELL US ABOUT
               <br />
               <span className="text-kinetic-primary">YOURSELF</span>
             </h1>
           </div>
-          <p className="text-kinetic-on-surface-variant text-lg leading-relaxed">
+          <p className="text-kinetic-on-surface-variant text-base sm:text-lg leading-relaxed">
             To tailor your nutritional plan and habit tracking, we need to know
             your biological baseline.
           </p>

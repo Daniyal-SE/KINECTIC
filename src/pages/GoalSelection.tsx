@@ -38,11 +38,11 @@ const GoalSelection = () => {
       <TopAppBar showBack showMenu showAvatar />
       <main className="flex-grow flex flex-col items-center justify-center px-6 py-12 max-w-4xl mx-auto w-full">
         <div className="w-full mb-12">
-          <h2 className="text-4xl md:text-5xl font-black text-kinetic-on-surface mb-4 tracking-tight leading-none">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-kinetic-on-surface mb-4 tracking-tight leading-none">
             DEFINE YOUR <br />
             <span className="text-kinetic-primary">PRECISION.</span>
           </h2>
-          <p className="text-kinetic-on-surface-variant text-lg max-w-md font-medium">
+          <p className="text-kinetic-on-surface-variant text-base sm:text-lg max-w-md font-medium">
             Choose the primary habit you want to master. We will calibrate your
             experience accordingly.
           </p>
