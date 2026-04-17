@@ -11,16 +11,16 @@ const FoodAnalysis: React.FC = () => {
         fontFamily: "'Inter', sans-serif",
       }}
     >
-      <header className="w-full top-0 z-50 sticky bg-[#0c1321] flex justify-between items-center px-6 py-4">
+      <header className="w-full top-0 z-50 sticky bg-[#0c1321] flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center gap-4">
           <h1
-            className="font-black tracking-tighter text-2xl text-[#4ade80] uppercase"
+            className="font-black tracking-tighter text-lg sm:text-2xl text-[#4ade80] uppercase"
             style={{ fontFamily: "'Manrope', sans-serif" }}
           >
             KINETIC
           </h1>
         </div>
-        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#3d4a3e] hover:opacity-80 transition-opacity cursor-pointer">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-[#3d4a3e] hover:opacity-80 transition-opacity cursor-pointer">
           <img
             alt="User Profile"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4i7RlbQ4l304ud1zxmMU7fqKzh9QV1LSi39NPeIyQ8_bISd9ncovJOraB9kBs3BDUmXSxDXUbd3oc0_yQsLQqKNMVyr8Vf4QrUVXEPXy8HkaD4AuOn_-QmExGXamINh6zo5pOZKf5mdDdIWs6rJiNT70EBOgBXj6ohUK0gC_8pQM5Vzq0q7H_EcaKwvRL1VV3v_2kb_J3h3u0JhcJ3jTjtpQobvH0VP45-pMoGRspcknfrc0ZxtYx3PyYw6_9S9jJLzNFOO4gBdRi"
@@ -28,20 +28,20 @@ const FoodAnalysis: React.FC = () => {
         </div>
       </header>
 
-      <main className="px-6 pt-8 max-w-2xl mx-auto">
+      <main className="px-4 sm:px-6 pt-4 sm:pt-8 max-w-2xl mx-auto">
         <section className="mb-10 text-center md:text-left">
           <h2
-            className="text-4xl font-extrabold tracking-tight text-[#dce2f6] mb-2"
+            className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#dce2f6] mb-2"
             style={{ fontFamily: "'Manrope', sans-serif" }}
           >
             Scan Your Meal
           </h2>
-          <p className="text-[#bccabb] text-lg">
+          <p className="text-[#bccabb] text-sm sm:text-lg">
             Upload or capture your food to analyze nutrients.
           </p>
         </section>
 
-        <div className="grid grid-cols-1 gap-8">
+        <div className="grid grid-cols-1 gap-5 sm:gap-8">
           <div className="relative group">
             <div className="w-full aspect-square md:aspect-video bg-[#151b2a] rounded-xl flex flex-col items-center justify-center relative overflow-hidden shadow-[0_0_30px_rgba(74,222,128,0.15)] cursor-pointer">
               <img
@@ -58,22 +58,22 @@ const FoodAnalysis: React.FC = () => {
               ></div>
               <div className="relative z-10 flex flex-col items-center gap-4">
                 <div className="flex gap-6">
-                  <div className="w-16 h-16 rounded-full bg-[#6bfb9a] flex items-center justify-center text-[#003919] shadow-lg shadow-[#6bfb9a]/20 active:scale-90 transition-transform">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[#6bfb9a] flex items-center justify-center text-[#003919] shadow-lg shadow-[#6bfb9a]/20 active:scale-90 transition-transform">
                     <span
-                      className="material-symbols-outlined text-3xl"
+                      className="material-symbols-outlined text-2xl sm:text-3xl"
                       style={{ fontVariationSettings: "'FILL' 1" }}
                     >
                       photo_camera
                     </span>
                   </div>
                   <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-[#4de082] active:scale-90 transition-transform"
+                    className="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-[#4de082] active:scale-90 transition-transform"
                     style={{
                       background: "rgba(46, 53, 68, 0.4)",
                       backdropFilter: "blur(20px)",
                     }}
                   >
-                    <span className="material-symbols-outlined text-3xl">
+                    <span className="material-symbols-outlined text-2xl sm:text-3xl">
                       gallery_thumbnail
                     </span>
                   </div>
@@ -85,12 +85,12 @@ const FoodAnalysis: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-[#232a39] rounded-xl p-6 relative overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="bg-[#232a39] rounded-xl p-4 sm:p-6 relative overflow-hidden">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <span
-                    className="text-[#4ade80] text-2xl font-bold"
+                    className="text-[#4ade80] text-xl sm:text-2xl font-bold"
                     style={{ fontFamily: "'Manrope', sans-serif" }}
                   >
                     Avocado Toast
@@ -110,7 +110,7 @@ const FoodAnalysis: React.FC = () => {
               </div>
               <div className="flex items-end gap-2 mt-6">
                 <span
-                  className="text-4xl font-black text-[#6bfb9a]"
+                  className="text-2xl sm:text-4xl font-black text-[#6bfb9a]"
                   style={{ fontFamily: "'Manrope', sans-serif" }}
                 >
                   +320
@@ -239,7 +239,7 @@ const FoodAnalysis: React.FC = () => {
         </div>
       </main>
 
-      <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-6 pb-8 pt-4 bg-[#151b2a]/80 backdrop-blur-xl z-50 rounded-t-[1.5rem] shadow-[0_-16px_32px_rgba(74,222,128,0.06)]">
+      <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 sm:px-6 pb-3 sm:pb-8 pt-2 sm:pt-4 bg-[#151b2a]/80 backdrop-blur-xl z-50 rounded-t-[20px] sm:rounded-t-[1.5rem] shadow-[0_-16px_32px_rgba(74,222,128,0.06)]" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
         <div
           onClick={() => navigate("/dashboard")}
           className="flex flex-col items-center justify-center text-slate-500 py-2 hover:text-[#4ADE80] transition-colors cursor-pointer"

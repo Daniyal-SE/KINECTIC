@@ -63,9 +63,22 @@
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
   }
+
+  html {
+    /* Fluid root font-size: scales from ~13.5px on 320px screens to 16px on 480px+ */
+    font-size: clamp(13.5px, 2.5vw + 5px, 16px);
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground font-body antialiased;
+    overflow-x: hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 }
 

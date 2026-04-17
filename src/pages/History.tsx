@@ -106,12 +106,12 @@ const History = () => {
   };
 
   return (
-    <div className="bg-kinetic-surface text-kinetic-on-surface min-h-screen pb-32 flex flex-col">
+    <div className="bg-kinetic-surface text-kinetic-on-surface min-h-screen pb-24 sm:pb-32 flex flex-col">
       <TopAppBar showBack showMenu showAvatar />
 
-      <main className="flex-1 px-6 pt-4 pb-32 overflow-y-auto min-h-[calc(100vh-200px)]">
+      <main className="flex-1 px-4 sm:px-6 pt-4 pb-24 sm:pb-32 overflow-y-auto min-h-[calc(100vh-200px)]">
         <section className="mb-10">
-          <h2 className="font-headline text-3xl sm:text-4xl md:text-5xl font-black text-kinetic-on-surface mb-2 leading-none uppercase tracking-tighter">
+          <h2 className="font-headline text-2xl sm:text-3xl md:text-5xl font-black text-kinetic-on-surface mb-2 leading-none uppercase tracking-tighter">
             {stats.currentStreak} DAY <br />
             <span className="text-kinetic-primary">VELOCITY</span>
           </h2>
@@ -125,23 +125,23 @@ const History = () => {
         </section>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 mb-10">
-          <div className="bg-kinetic-surface-container-low p-5 rounded-xl border-l-4 border-kinetic-primary">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-10">
+          <div className="bg-kinetic-surface-container-low p-3 sm:p-5 rounded-xl border-l-4 border-kinetic-primary">
             <p className="text-[10px] font-black tracking-widest text-kinetic-on-surface-variant uppercase mb-1">
               Success Rate
             </p>
-            <p className="text-2xl font-black text-kinetic-on-surface">
+            <p className="text-xl sm:text-2xl font-black text-kinetic-on-surface">
               {stats.successRate}%
             </p>
             <p className="text-[10px] text-kinetic-on-surface-variant mt-1">
               {stats.totalCompleted} of {stats.totalSessions} completed
             </p>
           </div>
-          <div className="bg-kinetic-surface-container-low p-5 rounded-xl border-l-4 border-secondary">
+          <div className="bg-kinetic-surface-container-low p-3 sm:p-5 rounded-xl border-l-4 border-secondary">
             <p className="text-[10px] font-black tracking-widest text-kinetic-on-surface-variant uppercase mb-1">
               Total Sessions
             </p>
-            <p className="text-2xl font-black text-kinetic-on-surface">
+            <p className="text-xl sm:text-2xl font-black text-kinetic-on-surface">
               {stats.totalSessions}
             </p>
             <p className="text-[10px] text-kinetic-on-surface-variant mt-1">

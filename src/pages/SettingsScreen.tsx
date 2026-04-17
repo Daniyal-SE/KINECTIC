@@ -88,25 +88,25 @@ const SettingsScreen = () => {
       `}</style>
 
       {/* TopAppBar */}
-      <header className="w-full top-0 z-50 sticky bg-[#0c1321] flex justify-between items-center px-6 py-4">
+      <header className="w-full top-0 z-50 sticky bg-[#0c1321] flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
             className="hover:opacity-80 transition-opacity flex items-center justify-center p-1 rounded-full cursor-pointer text-[#4ade80]"
           >
-            <span className="material-symbols-outlined text-2xl font-bold">
+            <span className="material-symbols-outlined text-xl sm:text-2xl font-bold">
               arrow_back
             </span>
           </button>
           
           <h1
-            className="font-black tracking-tighter text-2xl text-[#4ade80] uppercase"
+            className="font-black tracking-tighter text-lg sm:text-2xl text-[#4ade80] uppercase"
             style={{ fontFamily: "'Manrope', sans-serif" }}
           >
             KINETIC
           </h1>
         </div>
-        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#3d4a3e] hover:opacity-80 transition-opacity cursor-pointer">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-[#3d4a3e] hover:opacity-80 transition-opacity cursor-pointer">
           <img
             alt="User profile"
             className="w-full h-full object-cover"
@@ -115,12 +115,12 @@ const SettingsScreen = () => {
         </div>
       </header>
 
-      <main className="flex-1 px-6 pb-32 pt-4 max-w-2xl mx-auto w-full">
+      <main className="flex-1 px-4 sm:px-6 pb-24 sm:pb-32 pt-4 max-w-2xl mx-auto w-full">
         {/* Profile Header Section */}
         <section className="mb-10 animate-fade-in">
-          <div className="flex items-center gap-6 p-6 rounded-xl bg-kinetic-surface-container">
+          <div className="flex items-center gap-4 sm:gap-6 p-4 sm:p-6 rounded-xl bg-kinetic-surface-container">
             <div className="relative">
-              <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-kinetic-primary">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-4 border-kinetic-primary">
                 <img
                   alt="Profile"
                   className="w-full h-full object-cover"
@@ -156,7 +156,7 @@ const SettingsScreen = () => {
                 </div>
               ) : (
                 <div className="flex items-center gap-2 mb-2">
-                  <h2 className="text-2xl font-black tracking-tight text-kinetic-on-surface">
+                  <h2 className="text-lg sm:text-2xl font-black tracking-tight text-kinetic-on-surface">
                     {username}
                   </h2>
                   <button
@@ -182,11 +182,11 @@ const SettingsScreen = () => {
         </section>
 
         {/* Avatar Selection Section */}
-        <div className="mb-10">
+        <div className="mb-6 sm:mb-10">
           <h3 className="text-xs font-black text-kinetic-on-surface-variant tracking-[0.2em] uppercase mb-4">
             Choose Your Avatar
           </h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {AVATAR_OPTIONS.map((avatar) => (
               <button
                 key={avatar.id}
@@ -236,7 +236,7 @@ const SettingsScreen = () => {
         {/* Settings List Layout */}
         <div className="bg-kinetic-surface-container-low rounded-xl overflow-hidden mb-8">
           {/* Notifications Toggle */}
-          <div className="flex items-center justify-between p-5 transition-colors hover:bg-kinetic-surface-container">
+          <div className="flex items-center justify-between p-4 sm:p-5 transition-colors hover:bg-kinetic-surface-container">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-lg bg-kinetic-surface-container flex items-center justify-center text-kinetic-primary">
                 <span className="material-symbols-outlined">notifications</span>
@@ -253,7 +253,7 @@ const SettingsScreen = () => {
           <div className="h-[1px] bg-kinetic-outline-variant/10 mx-5"></div>
 
           {/* Reminders Toggle */}
-          <div className="flex items-center justify-between p-5 transition-colors hover:bg-kinetic-surface-container">
+          <div className="flex items-center justify-between p-4 sm:p-5 transition-colors hover:bg-kinetic-surface-container">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-lg bg-kinetic-surface-container flex items-center justify-center text-kinetic-primary">
                 <span className="material-symbols-outlined">alarm</span>
@@ -270,7 +270,7 @@ const SettingsScreen = () => {
           <div className="h-[1px] bg-kinetic-outline-variant/10 mx-5"></div>
 
           {/* Face ID Login Toggle */}
-          <div className="flex items-center justify-between p-5 transition-colors hover:bg-kinetic-surface-container">
+          <div className="flex items-center justify-between p-4 sm:p-5 transition-colors hover:bg-kinetic-surface-container">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-lg bg-kinetic-surface-container flex items-center justify-center text-kinetic-primary">
                 <span className="material-symbols-outlined">face</span>
@@ -315,37 +315,37 @@ const SettingsScreen = () => {
       </main>
 
       {/* BottomNavBar */}
-      <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-kinetic-surface-container/60 backdrop-blur-xl rounded-t-[24px] z-50 shadow-[0_0_40px_rgba(11,19,38,0.06)]">
+      <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 sm:px-4 pb-3 sm:pb-6 pt-2 sm:pt-3 bg-kinetic-surface-container/60 backdrop-blur-xl rounded-t-[20px] sm:rounded-t-[24px] z-50 shadow-[0_0_40px_rgba(11,19,38,0.06)]" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
         <button
           onClick={() => navigate("/dashboard")}
-          className="flex flex-col items-center justify-center text-kinetic-on-surface-variant px-5 py-2.5 hover:text-kinetic-on-surface transition-all scale-98"
+          className="flex flex-col items-center justify-center text-kinetic-on-surface-variant flex-1 px-1 sm:px-5 py-1.5 sm:py-2.5 hover:text-kinetic-on-surface transition-all"
         >
-          <span className="material-symbols-outlined mb-1">speed</span>
-          <span className="font-['Inter'] font-bold text-[10px] tracking-wider">
+          <span className="material-symbols-outlined mb-0.5 text-[18px] sm:text-[24px]">speed</span>
+          <span className="font-['Inter'] font-bold text-[7px] sm:text-[10px] tracking-tight sm:tracking-wider">
             DASHBOARD
           </span>
         </button>
         <button
           onClick={() => navigate("/analytics")}
-          className="flex flex-col items-center justify-center text-kinetic-on-surface-variant px-5 py-2.5 hover:text-kinetic-on-surface transition-all scale-98"
+          className="flex flex-col items-center justify-center text-kinetic-on-surface-variant flex-1 px-1 sm:px-5 py-1.5 sm:py-2.5 hover:text-kinetic-on-surface transition-all"
         >
-          <span className="material-symbols-outlined mb-1">leaderboard</span>
-          <span className="font-['Inter'] font-bold text-[10px] tracking-wider">
+          <span className="material-symbols-outlined mb-0.5 text-[18px] sm:text-[24px]">leaderboard</span>
+          <span className="font-['Inter'] font-bold text-[7px] sm:text-[10px] tracking-tight sm:tracking-wider">
             ANALYTICS
           </span>
         </button>
         <button
           onClick={() => navigate("/history")}
-          className="flex flex-col items-center justify-center text-kinetic-on-surface-variant px-5 py-2.5 hover:text-kinetic-on-surface transition-all scale-98"
+          className="flex flex-col items-center justify-center text-kinetic-on-surface-variant flex-1 px-1 sm:px-5 py-1.5 sm:py-2.5 hover:text-kinetic-on-surface transition-all"
         >
-          <span className="material-symbols-outlined mb-1">history</span>
-          <span className="font-['Inter'] font-bold text-[10px] tracking-wider">
+          <span className="material-symbols-outlined mb-0.5 text-[18px] sm:text-[24px]">history</span>
+          <span className="font-['Inter'] font-bold text-[7px] sm:text-[10px] tracking-tight sm:tracking-wider">
             HISTORY
           </span>
         </button>
         <button
           onClick={() => navigate("/settings")}
-          className="flex flex-col items-center justify-center bg-gradient-to-br from-kinetic-primary to-kinetic-primary-container text-kinetic-on-primary rounded-[24px] px-5 py-2.5 scale-98"
+          className="flex flex-col items-center justify-center bg-gradient-to-br from-kinetic-primary to-kinetic-primary-container text-kinetic-on-primary rounded-[18px] sm:rounded-[24px] flex-1 px-1 sm:px-5 py-1.5 sm:py-2.5 mx-0.5"
         >
           <span
             className="material-symbols-outlined mb-1"
@@ -353,7 +353,7 @@ const SettingsScreen = () => {
           >
             settings
           </span>
-          <span className="font-['Inter'] font-bold text-[10px] tracking-wider">
+          <span className="font-['Inter'] font-bold text-[7px] sm:text-[10px] tracking-tight sm:tracking-wider">
             SETTINGS
           </span>
         </button>

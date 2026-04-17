@@ -137,15 +137,15 @@ const Analytics = () => {
   };
 
   return (
-    <div className="bg-kinetic-surface text-kinetic-on-surface min-h-screen pb-32 flex flex-col">
+    <div className="bg-kinetic-surface text-kinetic-on-surface min-h-screen pb-24 sm:pb-32 flex flex-col">
       <TopAppBar showBack showMenu showAvatar />
 
-      <main className="flex-1 max-w-7xl mx-auto px-6 pt-8 pb-8 space-y-10 overflow-y-auto w-full min-h-[calc(100vh-200px)]">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 pt-4 sm:pt-8 pb-8 space-y-6 sm:space-y-10 overflow-y-auto w-full min-h-[calc(100vh-200px)]">
         <section className="space-y-2">
           <p className="text-kinetic-primary font-bold tracking-[0.2em] text-[10px] uppercase">
             Real-Time Integration
           </p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-kinetic-on-surface leading-tight tracking-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-kinetic-on-surface leading-tight tracking-tight">
             PERFORMANCE
             <br />
             <span className="text-kinetic-primary">ANALYTICS</span>
@@ -153,8 +153,8 @@ const Analytics = () => {
         </section>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-kinetic-surface-container-low rounded-xl p-6 flex flex-col justify-between hover:bg-kinetic-surface-container transition-colors duration-300">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          <div className="bg-kinetic-surface-container-low rounded-xl p-4 sm:p-6 flex flex-col justify-between hover:bg-kinetic-surface-container transition-colors duration-300">
             <div className="flex justify-between items-start">
               <span className="text-kinetic-on-surface-variant text-xs font-bold tracking-widest uppercase">
                 Current Streak
@@ -163,8 +163,8 @@ const Analytics = () => {
                 trending_up
               </span>
             </div>
-            <div className="mt-8">
-              <div className="text-5xl font-black text-kinetic-on-surface">
+            <div className="mt-4 sm:mt-8">
+              <div className="text-3xl sm:text-5xl font-black text-kinetic-on-surface">
                 {getCurrentStreak()}
               </div>
               <p className="text-kinetic-on-surface-variant text-sm mt-1">
@@ -179,7 +179,7 @@ const Analytics = () => {
             </div>
           </div>
 
-          <div className="bg-kinetic-surface-container-low rounded-xl p-6 flex flex-col justify-between hover:bg-kinetic-surface-container transition-colors duration-300">
+          <div className="bg-kinetic-surface-container-low rounded-xl p-4 sm:p-6 flex flex-col justify-between hover:bg-kinetic-surface-container transition-colors duration-300">
             <div className="flex justify-between items-start">
               <span className="text-kinetic-on-surface-variant text-xs font-bold tracking-widest uppercase">
                 Calories Saved
@@ -188,8 +188,8 @@ const Analytics = () => {
                 local_fire_department
               </span>
             </div>
-            <div className="mt-8">
-              <div className="text-5xl font-black text-kinetic-on-surface">
+            <div className="mt-4 sm:mt-8">
+              <div className="text-3xl sm:text-5xl font-black text-kinetic-on-surface">
                 {Math.round(avgCaloriesSaved / 1000)}K
               </div>
               <p className="text-kinetic-on-surface-variant text-sm mt-1">
@@ -203,7 +203,7 @@ const Analytics = () => {
             </div>
           </div>
 
-          <div className="bg-kinetic-surface-container-low rounded-xl p-6 flex flex-col justify-between hover:bg-kinetic-surface-container transition-colors duration-300">
+          <div className="bg-kinetic-surface-container-low rounded-xl p-4 sm:p-6 flex flex-col justify-between hover:bg-kinetic-surface-container transition-colors duration-300">
             <div className="flex justify-between items-start">
               <span className="text-kinetic-on-surface-variant text-xs font-bold tracking-widest uppercase">
                 Completion Rate
@@ -212,8 +212,8 @@ const Analytics = () => {
                 bolt
               </span>
             </div>
-            <div className="mt-8">
-              <div className="text-5xl font-black text-kinetic-on-surface">
+            <div className="mt-4 sm:mt-8">
+              <div className="text-3xl sm:text-5xl font-black text-kinetic-on-surface">
                 {completionRate}%
               </div>
               <p className="text-kinetic-on-surface-variant text-sm mt-1">
@@ -227,7 +227,7 @@ const Analytics = () => {
 
           {/* Current Session */}
           {streakData && streakData.startTime && (
-            <div className="md:col-span-3 bg-kinetic-surface-container rounded-xl p-8 relative overflow-hidden">
+            <div className="md:col-span-3 bg-kinetic-surface-container rounded-xl p-4 sm:p-8 relative overflow-hidden">
               <div className="absolute -top-24 -right-24 w-64 h-64 bg-kinetic-primary/5 blur-[80px] rounded-full" />
               <div className="relative z-10">
                 <div>
@@ -265,7 +265,7 @@ const Analytics = () => {
           )}
 
           {/* Weekly Performance */}
-          <div className="md:col-span-3 bg-kinetic-surface-container rounded-xl p-8">
+          <div className="md:col-span-3 bg-kinetic-surface-container rounded-xl p-4 sm:p-8">
             <div className="flex justify-between items-center mb-10">
               <div>
                 <h3 className="text-kinetic-on-surface text-xl font-black tracking-tight">
@@ -281,7 +281,7 @@ const Analytics = () => {
                 </span>
               </div>
             </div>
-            <div className="flex items-end justify-between h-48 px-2">
+            <div className="flex items-end justify-between h-32 sm:h-48 px-2">
               {weekData.map((bar) => (
                 <div
                   key={bar.day}
@@ -305,13 +305,13 @@ const Analytics = () => {
         </div>
 
         {/* Insights */}
-        <div className="bg-gradient-to-br from-kinetic-surface-container-low to-kinetic-surface rounded-xl p-8 border border-white/5">
+        <div className="bg-gradient-to-br from-kinetic-surface-container-low to-kinetic-surface rounded-xl p-4 sm:p-8 border border-white/5">
           <div className="flex items-start gap-4">
-            <span className="material-symbols-outlined text-kinetic-primary text-4xl">
+            <span className="material-symbols-outlined text-kinetic-primary text-2xl sm:text-4xl">
               psychology
             </span>
             <div>
-              <h4 className="text-2xl font-black text-kinetic-on-surface mb-4">
+              <h4 className="text-lg sm:text-2xl font-black text-kinetic-on-surface mb-2 sm:mb-4">
                 REAL-TIME INSIGHTS
               </h4>
               <p className="text-kinetic-on-surface-variant leading-relaxed">

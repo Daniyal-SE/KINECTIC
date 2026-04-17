@@ -215,19 +215,19 @@ const Dashboard = () => {
 
   return (
     <div
-      className="bg-[#0c1321] text-[#dce2f6] min-h-screen pb-32"
+      className="bg-[#0c1321] text-[#dce2f6] min-h-screen pb-24 sm:pb-32"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      <header className="w-full top-0 z-50 sticky bg-[#0c1321] flex justify-between items-center px-6 py-4">
+      <header className="w-full top-0 z-50 sticky bg-[#0c1321] flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center gap-4">
           <h1
-            className="font-black tracking-tighter text-2xl text-[#4ade80] uppercase"
+            className="font-black tracking-tighter text-lg sm:text-2xl text-[#4ade80] uppercase"
             style={{ fontFamily: "'Manrope', sans-serif" }}
           >
             KINETIC
           </h1>
         </div>
-        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#3d4a3e] hover:opacity-80 transition-opacity cursor-pointer">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-[#3d4a3e] hover:opacity-80 transition-opacity cursor-pointer">
           <img
             alt="User Profile"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4i7RlbQ4l304ud1zxmMU7fqKzh9QV1LSi39NPeIyQ8_bISd9ncovJOraB9kBs3BDUmXSxDXUbd3oc0_yQsLQqKNMVyr8Vf4QrUVXEPXy8HkaD4AuOn_-QmExGXamINh6zo5pOZKf5mdDdIWs6rJiNT70EBOgBXj6ohUK0gC_8pQM5Vzq0q7H_EcaKwvRL1VV3v_2kb_J3h3u0JhcJ3jTjtpQobvH0VP45-pMoGRspcknfrc0ZxtYx3PyYw6_9S9jJLzNFOO4gBdRi"
@@ -235,28 +235,28 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <main className="px-6 pt-8 max-w-2xl mx-auto space-y-8">
+      <main className="px-4 sm:px-6 pt-4 sm:pt-8 max-w-2xl mx-auto space-y-5 sm:space-y-8">
         {/* Greeting */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <div className="flex items-baseline justify-between">
-            <h2 className="text-4xl font-black tracking-tight text-kinetic-on-surface">
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-black tracking-tight text-kinetic-on-surface">
               STAY STRONG
             </h2>
-            <span className="text-kinetic-primary font-bold tracking-wider">
+            <span className="text-kinetic-primary text-sm sm:text-base font-bold tracking-wider">
               DAY {streakData.totalDays}
             </span>
           </div>
-          <div className="bg-kinetic-surface-container-low p-6 rounded-xl flex items-center justify-between hover:bg-kinetic-surface-container transition-colors">
+          <div className="bg-kinetic-surface-container-low p-4 sm:p-6 rounded-xl flex items-center justify-between hover:bg-kinetic-surface-container transition-colors">
             <div>
-              <p className="text-kinetic-on-surface-variant text-sm font-medium uppercase tracking-widest mb-1">
+              <p className="text-kinetic-on-surface-variant text-xs sm:text-sm font-medium uppercase tracking-widest mb-1">
                 Precision Focus
               </p>
-              <p className="text-3xl font-black text-kinetic-on-surface">
+              <p className="text-lg sm:text-2xl md:text-3xl font-black text-kinetic-on-surface">
                 {getPrecisionLabel()}
               </p>
             </div>
-            <div className="p-3 bg-kinetic-primary/10 rounded-full">
-              <span className="material-symbols-outlined text-kinetic-primary text-3xl">
+            <div className="p-2 sm:p-3 bg-kinetic-primary/10 rounded-full">
+              <span className="material-symbols-outlined text-kinetic-primary text-2xl sm:text-3xl">
                 {streakData.precision === "sugar"
                   ? "water_drop"
                   : streakData.precision === "junk-food"
@@ -270,7 +270,7 @@ const Dashboard = () => {
         </div>
 
         {/* Timer / Start Button */}
-        <div className="relative bg-kinetic-surface-container rounded-xl p-8 overflow-hidden shadow-2xl">
+        <div className="relative bg-kinetic-surface-container rounded-xl p-4 sm:p-8 overflow-hidden shadow-2xl">
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-kinetic-primary/5 blur-[80px] rounded-full" />
 
           {streakData.startTime ? (
@@ -284,10 +284,9 @@ const Dashboard = () => {
                 }}
               >
                 {/* Triple Ring Canvas */}
-                <div className="flex justify-center">
+                <div className="flex justify-center w-full">
                   <svg
-                    width="248"
-                    height="248"
+                    className="w-full max-w-[200px] sm:max-w-[248px] h-auto"
                     viewBox="0 0 248 248"
                     style={{ display: "block" }}
                   >
@@ -519,19 +518,19 @@ const Dashboard = () => {
             </div>
           ) : (
             // Start Button
-            <div className="flex flex-col items-center justify-center space-y-8 relative z-10 py-8">
-              <div className="text-center space-y-4">
-                <p className="text-kinetic-on-surface-variant font-bold uppercase tracking-widest">
+            <div className="flex flex-col items-center justify-center space-y-5 sm:space-y-8 relative z-10 py-4 sm:py-8">
+              <div className="text-center space-y-2 sm:space-y-4">
+                <p className="text-kinetic-on-surface-variant text-[10px] sm:text-xs font-bold uppercase tracking-widest">
                   Ready for Your Challenge?
                 </p>
-                <h3 className="text-3xl font-black text-kinetic-on-surface">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-kinetic-on-surface leading-tight">
                   Start Your 24-Hour Streak
                 </h3>
               </div>
 
               <button
                 onClick={() => setShowModal(true)}
-                className="px-12 py-6 bg-gradient-to-br from-[#4ADE80] to-[#16A34A] text-[#0B1220] font-black text-2xl rounded-full shadow-2xl shadow-[#4ADE80]/30 transition-transform active:scale-95 hover:shadow-3xl hover:shadow-[#4ADE80]/50 border border-[#4ADE80]/30"
+                className="px-6 sm:px-10 md:px-12 py-3 sm:py-5 md:py-6 bg-gradient-to-br from-[#4ADE80] to-[#16A34A] text-[#0B1220] font-black text-base sm:text-xl md:text-2xl rounded-full shadow-2xl shadow-[#4ADE80]/30 transition-transform active:scale-95 hover:shadow-3xl hover:shadow-[#4ADE80]/50 border border-[#4ADE80]/30"
               >
                 START
               </button>
@@ -549,7 +548,7 @@ const Dashboard = () => {
             {/* Adaptive Mode Selector component */}
             <div
               onClick={() => setShowModeSheet(true)}
-              className="bg-[#121A2B] p-5 rounded-xl border border-white/5 flex items-center justify-between group active:scale-[0.98] transition-transform cursor-pointer mb-8"
+              className="bg-[#121A2B] p-4 sm:p-5 rounded-xl border border-white/5 flex items-center justify-between group active:scale-[0.98] transition-transform cursor-pointer mb-5 sm:mb-8"
             >
               <div className="space-y-0.5">
                 <p className="text-[#9CA3AF] text-[10px] font-bold uppercase tracking-widest">
@@ -571,7 +570,7 @@ const Dashboard = () => {
 
             <div className="space-y-4">
               <div className="space-y-1">
-                <h3 className="text-2xl font-extrabold tracking-tight text-[#F1F5F9]">
+                <h3 className="text-lg sm:text-2xl font-extrabold tracking-tight text-[#F1F5F9]">
                   Today's Mission
                 </h3>
                 <p className="text-[#94A3B8] text-[11px] font-bold uppercase tracking-[0.1em]">
@@ -579,7 +578,7 @@ const Dashboard = () => {
                 </p>
               </div>
               {/* Calorie Balance Card */}
-              <div className="bg-[#121A2B] p-6 rounded-xl border border-white/5 space-y-5">
+              <div className="bg-[#121A2B] p-4 sm:p-6 rounded-xl border border-white/5 space-y-4 sm:space-y-5">
                 <div className="flex justify-between items-start">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
@@ -691,7 +690,7 @@ const Dashboard = () => {
             </div>
 
             {/* Progress Bar Section */}
-            <div className="bg-[#121A2B] p-6 rounded-xl space-y-5 border border-white/5">
+            <div className="bg-[#121A2B] p-4 sm:p-6 rounded-xl space-y-4 sm:space-y-5 border border-white/5">
               <div className="flex justify-between items-end">
                 <div className="space-y-1">
                   <h3 className="text-[#F1F5F9] font-bold text-lg leading-none">
@@ -717,10 +716,10 @@ const Dashboard = () => {
             </div>
 
             {/* Interaction Buttons */}
-            <div className="grid grid-cols-1 gap-4 pt-2">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4 pt-2">
               <button
                 onClick={() => navigate("/craving-active")}
-                className="group flex items-center justify-between p-5 bg-[#121A2B] border border-white/5 rounded-xl hover:border-[#4ADE80]/30 transition-all active:scale-[0.98] duration-200"
+                className="group flex items-center justify-between p-4 sm:p-5 bg-[#121A2B] border border-white/5 rounded-xl hover:border-[#4ADE80]/30 transition-all active:scale-[0.98] duration-200"
               >
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-[#38BDF8]/10 rounded-lg text-[#38BDF8]">
@@ -743,7 +742,7 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => navigate("/food-analysis")}
-                className="group flex items-center justify-between p-5 bg-[#121A2B] border border-white/5 rounded-xl hover:border-[#FB7185]/30 transition-all active:scale-[0.98] duration-200"
+                className="group flex items-center justify-between p-4 sm:p-5 bg-[#121A2B] border border-white/5 rounded-xl hover:border-[#FB7185]/30 transition-all active:scale-[0.98] duration-200"
               >
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-[#FB7185]/10 rounded-lg text-[#FB7185]">

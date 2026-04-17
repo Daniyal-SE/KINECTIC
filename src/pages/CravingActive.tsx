@@ -96,7 +96,7 @@ const CravingActive = () => {
   const circumference = 2 * Math.PI * 112;
 
   return (
-    <div className="bg-kinetic-surface text-kinetic-on-surface min-h-screen flex flex-col pb-32">
+    <div className="bg-kinetic-surface text-kinetic-on-surface min-h-screen flex flex-col pb-24 sm:pb-32">
       <style>{`
         .group:hover .hover-anim-water { animation: drop 1.5s ease-in-out infinite; }
         @keyframes drop {
@@ -131,17 +131,17 @@ const CravingActive = () => {
       `}</style>
       <TopAppBar showBack showAvatar />
 
-      <main className="flex-1 pt-8 pb-32 px-6 max-w-2xl mx-auto flex flex-col gap-8 overflow-y-auto">
+      <main className="flex-1 pt-4 sm:pt-8 pb-24 sm:pb-32 px-4 sm:px-6 max-w-2xl mx-auto flex flex-col gap-5 sm:gap-8 overflow-y-auto">
         {/* Header */}
         <section className="flex flex-col items-center text-center gap-2">
           <div className="flex items-center gap-3">
-            <h2 className="text-4xl font-headline font-black tracking-tight text-kinetic-on-surface">
+            <h2 className="text-2xl sm:text-4xl font-headline font-black tracking-tight text-kinetic-on-surface">
               Craving Detected
             </h2>
             <div className="relative flex items-center justify-center">
               <span className="absolute inline-flex h-full w-full rounded-full bg-kinetic-primary opacity-20 animate-pulse"></span>
               <span
-                className="material-symbols-outlined text-kinetic-primary text-3xl"
+                className="material-symbols-outlined text-kinetic-primary text-2xl sm:text-3xl"
                 style={{ fontVariationSettings: "'FILL' 1" }}
               >
                 pulse_alert
@@ -155,7 +155,7 @@ const CravingActive = () => {
 
         {/* Timer Display */}
         <section className="flex flex-col items-center justify-center py-2">
-          <div className="relative w-64 h-64 flex items-center justify-center">
+          <div className="relative w-48 h-48 sm:w-64 sm:h-64 flex items-center justify-center">
             <svg
               className="absolute inset-0 w-full h-full -rotate-90"
               viewBox="0 0 256 256"
@@ -197,7 +197,7 @@ const CravingActive = () => {
                 URGE WILL PASS IN
               </span>
               <span
-                className="text-5xl font-black"
+                className="text-3xl sm:text-5xl font-black"
                 style={{
                   fontVariantNumeric: "tabular-nums",
                   fontFamily: "Inter, sans-serif",
@@ -225,12 +225,12 @@ const CravingActive = () => {
           <h3 className="text-kinetic-on-surface font-black uppercase tracking-widest text-sm">
             What Will You Do Instead?
           </h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {distractionActions.map((action) => (
               <button
                 key={action.id}
                 onClick={() => setSelectedAction(action.id)}
-                className={`group flex flex-col items-center justify-center gap-3 p-6 rounded-xl transition-all active:scale-95 ${selectedAction === action.id
+                className={`group flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-xl transition-all active:scale-95 ${selectedAction === action.id
                   ? "bg-kinetic-primary text-kinetic-on-primary shadow-lg shadow-kinetic-primary/30"
                   : "bg-kinetic-surface-container-low hover:bg-kinetic-surface-container border-2 border-transparent hover:border-kinetic-primary/30 text-kinetic-on-surface"
                   }`}
@@ -281,7 +281,7 @@ const CravingActive = () => {
         </section>
 
         {/* What Triggered This? */}
-        <section className="flex flex-col gap-4 bg-kinetic-surface-container-lowest/50 p-6 rounded-2xl">
+        <section className="flex flex-col gap-3 sm:gap-4 bg-kinetic-surface-container-lowest/50 p-4 sm:p-6 rounded-2xl">
           <h3 className="text-center font-bold text-kinetic-on-surface-variant uppercase tracking-widest text-xs">
             What Triggered This?
           </h3>
@@ -304,7 +304,7 @@ const CravingActive = () => {
         {/* Action Buttons */}
         <button
           onClick={handleOvercameIt}
-          className="w-full py-5 rounded-xl bg-gradient-to-r from-kinetic-primary to-kinetic-primary-container text-kinetic-on-primary font-headline font-bold text-lg uppercase tracking-wider shadow-[0_12px_24px_-8px_rgba(var(--kinetic-primary)/0.4)] active:scale-[0.98] transition-all"
+          className="w-full py-4 sm:py-5 rounded-xl bg-gradient-to-r from-kinetic-primary to-kinetic-primary-container text-kinetic-on-primary font-headline font-bold text-base sm:text-lg uppercase tracking-wider shadow-[0_12px_24px_-8px_rgba(var(--kinetic-primary)/0.4)] active:scale-[0.98] transition-all"
         >
           I OVERCAME IT
         </button>

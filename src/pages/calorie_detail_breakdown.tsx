@@ -9,16 +9,16 @@ const CalorieDetailBreakdown: React.FC = () => {
       className="bg-[#0c1321] text-[#dce2f6] selection:bg-[#6bfb9a] selection:text-[#003919]"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      <header className="w-full top-0 z-50 sticky bg-[#0c1321] flex justify-between items-center px-6 py-4">
+      <header className="w-full top-0 z-50 sticky bg-[#0c1321] flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center gap-4">
           <h1
-            className="font-black tracking-tighter text-2xl text-[#4ade80] uppercase"
+            className="font-black tracking-tighter text-lg sm:text-2xl text-[#4ade80] uppercase"
             style={{ fontFamily: "'Manrope', sans-serif" }}
           >
             KINETIC
           </h1>
         </div>
-        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#3d4a3e] hover:opacity-80 transition-opacity cursor-pointer">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-[#3d4a3e] hover:opacity-80 transition-opacity cursor-pointer">
           <img
             alt="User Profile"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4i7RlbQ4l304ud1zxmMU7fqKzh9QV1LSi39NPeIyQ8_bISd9ncovJOraB9kBs3BDUmXSxDXUbd3oc0_yQsLQqKNMVyr8Vf4QrUVXEPXy8HkaD4AuOn_-QmExGXamINh6zo5pOZKf5mdDdIWs6rJiNT70EBOgBXj6ohUK0gC_8pQM5Vzq0q7H_EcaKwvRL1VV3v_2kb_J3h3u0JhcJ3jTjtpQobvH0VP45-pMoGRspcknfrc0ZxtYx3PyYw6_9S9jJLzNFOO4gBdRi"
@@ -26,11 +26,11 @@ const CalorieDetailBreakdown: React.FC = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 pt-4 pb-32">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-4 pb-24 sm:pb-32">
         {/* Title Section */}
         <div className="mb-10">
           <h2
-            className="text-4xl md:text-5xl font-extrabold tracking-tighter text-[#dce2f6] mb-2"
+            className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tighter text-[#dce2f6] mb-2"
             style={{ fontFamily: "'Manrope', sans-serif" }}
           >
             Daily Breakdown
@@ -41,9 +41,9 @@ const CalorieDetailBreakdown: React.FC = () => {
         </div>
 
         {/* Big Metrics Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-10">
           {/* Intake */}
-          <div className="bg-[#151b2a] p-8 rounded-xl relative overflow-hidden">
+          <div className="bg-[#151b2a] p-4 sm:p-8 rounded-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10">
               <span
                 className="material-symbols-outlined text-6xl"
@@ -57,7 +57,7 @@ const CalorieDetailBreakdown: React.FC = () => {
             </p>
             <div className="flex items-baseline gap-2">
               <span
-                className="text-4xl font-extrabold text-[#dce2f6]"
+                className="text-2xl sm:text-4xl font-extrabold text-[#dce2f6]"
                 style={{ fontFamily: "'Manrope', sans-serif" }}
               >
                 +320
@@ -80,7 +80,7 @@ const CalorieDetailBreakdown: React.FC = () => {
           </div>
 
           {/* Burned */}
-          <div className="bg-[#151b2a] p-8 rounded-xl relative overflow-hidden">
+          <div className="bg-[#151b2a] p-4 sm:p-8 rounded-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10">
               <span
                 className="material-symbols-outlined text-6xl"
@@ -94,7 +94,7 @@ const CalorieDetailBreakdown: React.FC = () => {
             </p>
             <div className="flex items-baseline gap-2">
               <span
-                className="text-4xl font-extrabold text-[#dce2f6]"
+                className="text-2xl sm:text-4xl font-extrabold text-[#dce2f6]"
                 style={{ fontFamily: "'Manrope', sans-serif" }}
               >
                 -180
@@ -112,7 +112,7 @@ const CalorieDetailBreakdown: React.FC = () => {
           </div>
 
           {/* Net Balance */}
-          <div className="bg-[#232a39] p-8 rounded-xl relative overflow-hidden border border-[#6bfb9a]/10">
+          <div className="bg-[#232a39] p-4 sm:p-8 rounded-xl relative overflow-hidden border border-[#6bfb9a]/10">
             <div className="absolute top-0 right-0 p-4 opacity-20 text-[#6bfb9a]">
               <span
                 className="material-symbols-outlined text-6xl"
@@ -126,7 +126,7 @@ const CalorieDetailBreakdown: React.FC = () => {
             </p>
             <div className="flex items-baseline gap-2">
               <span
-                className="text-5xl font-extrabold text-[#dce2f6]"
+                className="text-3xl sm:text-5xl font-extrabold text-[#dce2f6]"
                 style={{ fontFamily: "'Manrope', sans-serif" }}
               >
                 +140
@@ -145,7 +145,7 @@ const CalorieDetailBreakdown: React.FC = () => {
         </div>
 
         {/* Trend Chart Section */}
-        <div className="bg-[#151b2a] rounded-xl p-8 mb-10">
+        <div className="bg-[#151b2a] rounded-xl p-4 sm:p-8 mb-6 sm:mb-10">
           <div className="flex justify-between items-end mb-12">
             <div>
               <h3
@@ -175,7 +175,7 @@ const CalorieDetailBreakdown: React.FC = () => {
           </div>
 
           {/* Asymmetric Trend Visualization */}
-          <div className="relative h-64 w-full flex items-end justify-between gap-4">
+          <div className="relative h-40 sm:h-64 w-full flex items-end justify-between gap-2 sm:gap-4">
             <div className="flex flex-col items-center gap-2 flex-1">
               <div className="w-full flex items-end gap-1 h-full">
                 <div className="bg-[#6bfb9a]/20 w-1/2 rounded-t-lg h-[40%]"></div>
@@ -374,7 +374,8 @@ const CalorieDetailBreakdown: React.FC = () => {
 
       {/* BottomNavBar */}
       <nav
-        className="fixed bottom-0 left-0 w-full flex justify-around items-center px-6 pb-8 pt-4 bg-[#151b2a]/80 backdrop-blur-xl z-50 rounded-t-[1.5rem] shadow-[0_-16px_32px_rgba(74,222,128,0.06)]"
+        className="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 sm:px-6 pb-3 sm:pb-8 pt-2 sm:pt-4 bg-[#151b2a]/80 backdrop-blur-xl z-50 rounded-t-[20px] sm:rounded-t-[1.5rem] shadow-[0_-16px_32px_rgba(74,222,128,0.06)]"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
       >
         <div
           onClick={() => navigate("/dashboard")}
