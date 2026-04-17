@@ -31,8 +31,8 @@ const WelcomeScreen = () => {
 
       <main className="flex-1 flex flex-col relative">
         {/* Hero */}
-        <div className="relative w-full h-[400px] md:h-[530px] overflow-hidden bg-gradient-to-b from-kinetic-surface-container to-kinetic-surface">
-          <div className="absolute bottom-12 left-6 right-6 md:left-12 z-10 max-w-xl">
+        <div className="w-full pt-16 pb-20 overflow-hidden bg-gradient-to-b from-kinetic-surface-container to-kinetic-surface">
+          <div className="px-6 md:px-12 max-w-xl">
             <span className="text-kinetic-primary font-black tracking-widest text-xs uppercase bg-kinetic-primary/10 px-3 py-1 rounded-full w-fit inline-block mb-3">
               SYSTEM READY
             </span>
