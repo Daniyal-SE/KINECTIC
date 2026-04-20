@@ -1,8 +1,65 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AiFoodScanner: React.FC = () => {
   const navigate = useNavigate();
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        setIsCameraActive(true);
+      }
+    } catch (err) {
+      alert("Please allow camera permission to scan food.");
+    }
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && isCameraActive) {
+      const canvas = document.createElement("canvas");
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(videoRef.current, 0, 0);
+        setCapturedImage(canvas.toDataURL("image/jpeg"));
+      }
+      stopCamera();
+    } else {
+      startCamera();
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((track) => track.stop());
+      videoRef.current.srcObject = null;
+      setIsCameraActive(false);
+    }
+  };
+
+  const handleGallerySelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        alert("Please select an image file.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setCapturedImage(e.target?.result as string);
+        stopCamera();
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <div
@@ -47,21 +104,42 @@ const AiFoodScanner: React.FC = () => {
         <div className="grid grid-cols-1 gap-8">
           <div className="relative group">
             <div className="w-full aspect-square md:aspect-video bg-[#151b2a] rounded-xl flex flex-col items-center justify-center relative overflow-hidden shadow-[0_0_30px_rgba(74,222,128,0.15)] cursor-pointer">
-              <img
-                className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_-xEzyFOY1TCD_56mMJu3QZp9clLCg_ZD9A0y0PujHMTNx0dsNwFrR1JTIB0k877ZYhhKuntIB_rmKfPnIq-z-wPici05KfkQHDiMuXz1l4rccv3W1VBMo8ZzdszFrYv61uR-ERsTmOoPIoNViM0gmTJNATGECs1Wvf4uaXjh7IeO0WqZlWOUKdXP6qWQIeTH74c4djypyzKwVFydoculqyvDPHzMT1bWuStNONSrajapXORUF8YDvQlHnO386NWpgTWI-VcPE_AF"
-                alt="food bowl"
-              />
-              <div
-                className="absolute top-1/2 w-full h-[2px] z-10"
-                style={{
-                  background:
-                    "linear-gradient(90deg, transparent, #6bfb9a, transparent)",
-                }}
-              ></div>
-              <div className="relative z-10 flex flex-col items-center gap-4">
+              {capturedImage ? (
+                <img
+                  className="absolute inset-0 w-full h-full object-cover z-0"
+                  src={capturedImage}
+                  alt="Scanned Food"
+                />
+              ) : isCameraActive ? (
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover z-0"
+                />
+              ) : (
+                <img
+                  className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity z-0"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_-xEzyFOY1TCD_56mMJu3QZp9clLCg_ZD9A0y0PujHMTNx0dsNwFrR1JTIB0k877ZYhhKuntIB_rmKfPnIq-z-wPici05KfkQHDiMuXz1l4rccv3W1VBMo8ZzdszFrYv61uR-ERsTmOoPIoNViM0gmTJNATGECs1Wvf4uaXjh7IeO0WqZlWOUKdXP6qWQIeTH74c4djypyzKwVFydoculqyvDPHzMT1bWuStNONSrajapXORUF8YDvQlHnO386NWpgTWI-VcPE_AF"
+                  alt="food bowl"
+                />
+              )}
+              
+              {!capturedImage && (
+                <div
+                  className="absolute top-1/2 w-full h-[2px] z-10"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent, #6bfb9a, transparent)",
+                  }}
+                ></div>
+              )}
+              <div className="relative z-10 flex flex-col items-center gap-4 bg-black/30 p-4 rounded-3xl backdrop-blur-sm">
                 <div className="flex gap-6">
-                  <div className="w-16 h-16 rounded-full bg-[#6bfb9a] flex items-center justify-center text-[#003919] shadow-lg shadow-[#6bfb9a]/20 active:scale-90 transition-transform">
+                  <div 
+                    onClick={(e) => { e.stopPropagation(); capturePhoto(); }}
+                    className={`w-16 h-16 rounded-full flex items-center justify-center text-[#003919] shadow-lg shadow-[#6bfb9a]/20 active:scale-90 transition-transform ${isCameraActive ? "bg-white" : "bg-[#6bfb9a]"}`}
+                  >
                     <span
                       className="material-symbols-outlined text-3xl"
                       style={{ fontVariationSettings: "'FILL' 1" }}
@@ -70,20 +148,31 @@ const AiFoodScanner: React.FC = () => {
                     </span>
                   </div>
                   <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-[#4de082] active:scale-90 transition-transform"
-                    style={{
-                      background: "rgba(46, 53, 68, 0.4)",
-                      backdropFilter: "blur(20px)",
-                    }}
+                    onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-[#4de082] active:scale-90 transition-transform bg-[#2e3544]/80"
                   >
                     <span className="material-symbols-outlined text-3xl">
                       gallery_thumbnail
                     </span>
                   </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleGallerySelect}
+                    className="hidden"
+                  />
                 </div>
-                <p className="font-medium uppercase tracking-widest text-xs text-[#6dfe9c]">
-                  Tap to scan
-                </p>
+                {!capturedImage && (
+                  <p className="font-medium uppercase tracking-widest text-xs text-[#6dfe9c]">
+                    {isCameraActive ? "Tap camera to capture" : "Tap camera to scan"}
+                  </p>
+                )}
+                {capturedImage && (
+                  <button onClick={(e) => { e.stopPropagation(); setCapturedImage(null); }} className="font-bold uppercase tracking-widest text-xs text-white">
+                    Retake Photo
+                  </button>
+                )}
               </div>
             </div>
           </div>

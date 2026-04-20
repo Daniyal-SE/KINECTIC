@@ -1,13 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import TopAppBar from "@/components/TopAppBar";
 
 const CravingDefeat = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
-    energyBoost: 12,
-    willpowerLevel: "Peak",
+    reason: "Unknown",
+    action: "Unknown",
   });
+
+  useEffect(() => {
+    const savedRecords = localStorage.getItem("dailyRecords");
+    if (savedRecords) {
+      const records = JSON.parse(savedRecords);
+      // Find the last craving-resistance record
+      const lastRecord = records.reverse().find((r: any) => r.precision === "craving-resistance");
+      if (lastRecord) {
+        setStats({
+          reason: lastRecord.reason || "Unknown",
+          action: lastRecord.action || "Unknown",
+        });
+      }
+    }
+  }, []);
 
   const handleBackToDashboard = () => {
     navigate("/dashboard");
@@ -71,20 +86,20 @@ const CravingDefeat = () => {
 
           {/* Stats Bento Grid */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-10 sm:mb-16">
-            <div className="bg-kinetic-surface-container-low p-4 sm:p-6 rounded-xl text-left border-l-4 border-kinetic-primary/20">
+            <div className="bg-kinetic-surface-container-low p-4 sm:p-6 rounded-xl text-left border-l-4 border-kinetic-primary/20 flex flex-col justify-between">
               <p className="font-label text-[10px] uppercase tracking-widest text-kinetic-on-surface-variant mb-2">
-                Energy Level
+                Resisted Trigger
               </p>
-              <p className="font-headline text-2xl font-bold text-kinetic-on-surface">
-                +{stats.energyBoost}%
+              <p className="font-headline text-lg md:text-xl font-bold text-kinetic-on-surface capitalize">
+                {stats.reason}
               </p>
             </div>
-            <div className="bg-kinetic-surface-container-low p-4 sm:p-6 rounded-xl text-left border-l-4 border-kinetic-secondary/20">
+            <div className="bg-kinetic-surface-container-low p-4 sm:p-6 rounded-xl text-left border-l-4 border-kinetic-secondary/20 flex flex-col justify-between">
               <p className="font-label text-[10px] uppercase tracking-widest text-kinetic-on-surface-variant mb-2">
-                Willpower
+                Action Taken
               </p>
-              <p className="font-headline text-2xl font-bold text-kinetic-on-surface">
-                {stats.willpowerLevel}
+              <p className="font-headline text-lg md:text-xl font-bold text-kinetic-on-surface capitalize">
+                {stats.action}
               </p>
             </div>
           </div>

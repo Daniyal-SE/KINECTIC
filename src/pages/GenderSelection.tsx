@@ -95,8 +95,15 @@ const GenderSelection = () => {
 
         <footer className="mt-12 pb-8">
           <button
-            onClick={() => navigate("/onboarding/stats")}
-            className="w-full bg-gradient-to-br from-kinetic-primary to-kinetic-primary-container text-kinetic-on-primary py-5 rounded-xl font-black text-lg tracking-widest uppercase flex items-center justify-center gap-3 active:scale-[0.98] transition-transform duration-200"
+            onClick={() => {
+              if (selected) navigate("/onboarding/stats");
+            }}
+            disabled={!selected}
+            className={`w-full py-5 rounded-xl font-black text-lg tracking-widest uppercase flex items-center justify-center gap-3 transition-all duration-200 ${
+              selected
+                ? "bg-gradient-to-br from-kinetic-primary to-kinetic-primary-container text-kinetic-on-primary active:scale-[0.98] shadow-lg shadow-kinetic-primary/20"
+                : "bg-kinetic-surface-container-high text-kinetic-on-surface-variant cursor-not-allowed opacity-50"
+            }`}
           >
             Next{" "}
             <span className="material-symbols-outlined">arrow_forward</span>

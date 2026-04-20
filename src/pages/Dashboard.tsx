@@ -10,6 +10,7 @@ interface StreakData {
   totalDays: number;
   precision: PrecisionMode;
   customPrecision?: string;
+  plan?: "student" | "work" | "flexible";
   notificationSent: boolean;
   preNotificationSent: boolean;
 }
@@ -17,7 +18,6 @@ interface StreakData {
 const Dashboard = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [showModeSheet, setShowModeSheet] = useState(false);
   const [streakData, setStreakData] = useState<StreakData>(() => {
     const saved = localStorage.getItem("streakData");
     return saved
@@ -25,15 +25,32 @@ const Dashboard = () => {
       : {
         startTime: null,
         elapsedTime: 0,
-        totalDays: 7,
+        totalDays: 0,
         precision: null,
         customPrecision: "",
+        plan: "student",
         notificationSent: false,
         preNotificationSent: false,
       };
   });
   const [customInput, setCustomInput] = useState("");
   const [timerKey, setTimerKey] = useState(0); // Force re-render for timer updates
+  const [isPrecisionExpanded, setIsPrecisionExpanded] = useState(false);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartY(e.touches[0].clientY);
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartY === null) return;
+    const touchEndY = e.changedTouches[0].clientY;
+    if (touchEndY - touchStartY > 30) {
+      setIsPrecisionExpanded(true); // Swipe down
+    } else if (touchStartY - touchEndY > 30) {
+      setIsPrecisionExpanded(false); // Swipe up
+    }
+    setTouchStartY(null);
+  };
 
   // Calculate remaining time and daily discipline based on current time
   const getTimerValues = () => {
@@ -243,29 +260,63 @@ const Dashboard = () => {
               STAY STRONG
             </h2>
             <span className="text-kinetic-primary text-sm sm:text-base font-bold tracking-wider">
-              DAY {streakData.totalDays}
+              DAY {Math.max(1, streakData.startTime ? streakData.totalDays + 1 : streakData.totalDays)}
             </span>
           </div>
-          <div className="bg-kinetic-surface-container-low p-4 sm:p-6 rounded-xl flex items-center justify-between hover:bg-kinetic-surface-container transition-colors">
-            <div>
-              <p className="text-kinetic-on-surface-variant text-xs sm:text-sm font-medium uppercase tracking-widest mb-1">
-                Precision Focus
-              </p>
-              <p className="text-lg sm:text-2xl md:text-3xl font-black text-kinetic-on-surface">
-                {getPrecisionLabel()}
-              </p>
+          <div
+            className="bg-kinetic-surface-container-low p-4 sm:p-6 rounded-xl hover:bg-kinetic-surface-container transition-colors relative"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-kinetic-on-surface-variant text-xs sm:text-sm font-medium uppercase tracking-widest mb-1">
+                  Precision Focus
+                </p>
+                <p className="text-lg sm:text-2xl md:text-3xl font-black text-kinetic-on-surface">
+                  {getPrecisionLabel()}
+                </p>
+              </div>
+              <div className="p-2 sm:p-3 bg-kinetic-primary/10 rounded-full">
+                <span className="material-symbols-outlined text-kinetic-primary text-2xl sm:text-3xl">
+                  {streakData.precision === "sugar"
+                    ? "water_drop"
+                    : streakData.precision === "junk-food"
+                      ? "no_food"
+                      : streakData.precision === "cold-drink"
+                        ? "local_drink"
+                        : "edit"}
+                </span>
+              </div>
             </div>
-            <div className="p-2 sm:p-3 bg-kinetic-primary/10 rounded-full">
-              <span className="material-symbols-outlined text-kinetic-primary text-2xl sm:text-3xl">
-                {streakData.precision === "sugar"
-                  ? "water_drop"
-                  : streakData.precision === "junk-food"
-                    ? "no_food"
-                    : streakData.precision === "cold-drink"
-                      ? "local_drink"
-                      : "edit"}
-              </span>
-            </div>
+
+            {/* Expanded Plan Options via swipe */}
+            {isPrecisionExpanded && streakData.startTime && (
+              <div className="mt-6 pt-4 border-t border-kinetic-outline-variant/30 animate-in slide-in-from-top-2">
+                <p className="text-kinetic-on-surface-variant text-[10px] font-bold uppercase tracking-widest mb-3">Choose Your Plan Mode</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {[
+                    { id: "student", label: "Student", sub: "Balanced routine goals" },
+                    { id: "work", label: "Work", sub: "Time-efficient focus" },
+                    { id: "flexible", label: "Freelancer", sub: "Higher intensity push" }
+                  ].map((plan) => (
+                    <button
+                      key={plan.id}
+                      onClick={() => setStreakData((s: any) => ({ ...s, plan: plan.id }))}
+                      className={`text-left p-3 rounded-lg border-2 transition-all ${streakData.plan === plan.id
+                        ? "bg-kinetic-primary/10 border-kinetic-primary"
+                        : "bg-transparent border-kinetic-outline-variant/30 hover:border-kinetic-primary/50"
+                        }`}
+                    >
+                      <p className={`font-bold text-sm ${streakData.plan === plan.id ? "text-kinetic-primary" : "text-kinetic-on-surface"}`}>
+                        {plan.label}
+                      </p>
+                      <p className="text-kinetic-on-surface-variant text-[10px] mt-1">{plan.sub}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -545,28 +596,7 @@ const Dashboard = () => {
         {/* Daily Mission Section & Content from EM */}
         {streakData.startTime && (
           <>
-            {/* Adaptive Mode Selector component */}
-            <div
-              onClick={() => setShowModeSheet(true)}
-              className="bg-[#121A2B] p-4 sm:p-5 rounded-xl border border-white/5 flex items-center justify-between group active:scale-[0.98] transition-transform cursor-pointer mb-5 sm:mb-8"
-            >
-              <div className="space-y-0.5">
-                <p className="text-[#9CA3AF] text-[10px] font-bold uppercase tracking-widest">
-                  Your Plan
-                </p>
-                <p className="text-[#E5E7EB] font-bold text-lg">
-                  Optimized for: <span className="text-[#4ADE80]">Student</span>
-                </p>
-                <p className="text-[#9CA3AF] text-xs">
-                  Balanced goals based on your routine
-                </p>
-              </div>
-              <div className="text-[#4ADE80]">
-                <span className="material-symbols-outlined text-2xl">
-                  unfold_more
-                </span>
-              </div>
-            </div>
+            {/* Adaptive Mode Removed, Integrated Above */}
 
             <div className="space-y-4">
               <div className="space-y-1">
@@ -767,78 +797,6 @@ const Dashboard = () => {
           </>
         )}
       </main>
-
-      {/* Interaction: Bottom Sheet */}
-      <div
-        className={`fixed inset-0 z-[60] transition-opacity duration-300 ${showModeSheet ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
-      >
-        {/* Overlay */}
-        <div
-          className="absolute inset-0 bg-[#0B1220]/60 backdrop-blur-sm"
-          onClick={() => setShowModeSheet(false)}
-        ></div>
-
-        {/* Sheet Container */}
-        <div
-          className={`absolute bottom-0 left-0 w-full bg-[#121A2B] border-t border-white/10 rounded-t-xl pb-12 pt-4 px-6 transition-transform duration-300 ease-out delay-75 ${showModeSheet ? "translate-y-0" : "translate-y-full"
-            }`}
-        >
-          {/* Handle */}
-          <div className="w-12 h-1.5 bg-[#1E293B] rounded-full mx-auto mb-6"></div>
-
-          <h4 className="text-xl font-extrabold text-[#F1F5F9] mb-6">Select Your Mode</h4>
-          <div className="space-y-4">
-            {/* Option 1: Student */}
-            <button className="w-full flex items-center justify-between p-5 rounded-xl border-2 border-[#4ADE80] bg-[#4ADE80]/5">
-              <div className="flex items-center gap-4 text-left">
-                <div className="p-3 bg-[#4ADE80]/10 rounded-lg text-[#4ADE80]">
-                  <span className="material-symbols-outlined text-2xl">school</span>
-                </div>
-                <div>
-                  <p className="text-[#F1F5F9] font-extrabold uppercase tracking-wide">Student</p>
-                  <p className="text-[#94A3B8] text-sm">Moderate daily goals</p>
-                </div>
-              </div>
-              <div className="h-6 w-6 rounded-full border-2 border-[#4ADE80] flex items-center justify-center">
-                <div className="h-3 w-3 bg-[#4ADE80] rounded-full"></div>
-              </div>
-            </button>
-            {/* Option 2: Work */}
-            <button className="w-full flex items-center justify-between p-5 rounded-xl border border-white/5 bg-[#1E293B]/50">
-              <div className="flex items-center gap-4 text-left text-[#94A3B8]">
-                <div className="p-3 bg-[#1E293B] rounded-lg">
-                  <span className="material-symbols-outlined text-2xl">work</span>
-                </div>
-                <div>
-                  <p className="font-extrabold uppercase tracking-wide">Work</p>
-                  <p className="text-sm">Light and time-efficient tasks</p>
-                </div>
-              </div>
-              <div className="h-6 w-6 rounded-full border-2 border-white/10"></div>
-            </button>
-            {/* Option 3: Flexible */}
-            <button className="w-full flex items-center justify-between p-5 rounded-xl border border-white/5 bg-[#1E293B]/50">
-              <div className="flex items-center gap-4 text-left text-[#94A3B8]">
-                <div className="p-3 bg-[#1E293B] rounded-lg">
-                  <span className="material-symbols-outlined text-2xl">bolt</span>
-                </div>
-                <div>
-                  <p className="font-extrabold uppercase tracking-wide">Flexible</p>
-                  <p className="text-sm">Higher intensity goals</p>
-                </div>
-              </div>
-              <div className="h-6 w-6 rounded-full border-2 border-white/10"></div>
-            </button>
-          </div>
-          <button
-            onClick={() => setShowModeSheet(false)}
-            className="w-full mt-8 py-4 bg-[#4ADE80] text-[#0B1220] font-black uppercase tracking-widest rounded-xl"
-          >
-            Confirm Selection
-          </button>
-        </div>
-      </div>
 
       {/* Modal for Starting Streak */}
       {showModal && (

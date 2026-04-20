@@ -10,6 +10,18 @@ const PhysicalStats = () => {
   const [weight, setWeight] = useState(74.5);
   const [unit, setUnit] = useState<"cm" | "ft">("cm");
 
+  const handleUnitChange = (newUnit: "cm" | "ft") => {
+    if (unit === newUnit) return;
+    if (newUnit === "ft") {
+      // Convert cm to ft (1 cm = ~0.0328 ft)
+      setHeight(+(height * 0.0328084).toFixed(1));
+    } else {
+      // Convert ft to cm (1 ft = 30.48 cm)
+      setHeight(Math.round(height * 30.48));
+    }
+    setUnit(newUnit);
+  };
+
   return (
     <div className="bg-kinetic-surface text-kinetic-on-surface min-h-screen flex flex-col items-center justify-start overflow-x-hidden">
       <TopAppBar showBack showAvatar />
@@ -77,8 +89,9 @@ const PhysicalStats = () => {
               </div>
               <input
                 type="range"
-                min={unit === "cm" ? "140" : "4"}
-                max={unit === "cm" ? "220" : "7"}
+                min={unit === "cm" ? "140" : "4.5"}
+                max={unit === "cm" ? "220" : "7.2"}
+                step={unit === "cm" ? "1" : "0.1"}
                 value={height}
                 onChange={(e) => setHeight(Number(e.target.value))}
                 className="w-full"
@@ -91,13 +104,13 @@ const PhysicalStats = () => {
                 </span>
               </div>
               <button
-                onClick={() => setUnit("cm")}
+                onClick={() => handleUnitChange("cm")}
                 className={`font-bold text-[10px] tracking-widest py-2 rounded-lg uppercase ${unit === "cm" ? "bg-kinetic-surface-container text-kinetic-primary border border-kinetic-primary/20" : "text-kinetic-on-surface-variant"}`}
               >
                 CM
               </button>
               <button
-                onClick={() => setUnit("ft")}
+                onClick={() => handleUnitChange("ft")}
                 className={`font-bold text-[10px] tracking-widest py-2 rounded-lg uppercase ${unit === "ft" ? "bg-kinetic-surface-container text-kinetic-primary border border-kinetic-primary/20" : "text-kinetic-on-surface-variant"}`}
               >
                 FT/IN
@@ -122,15 +135,30 @@ const PhysicalStats = () => {
                 </span>
               </div>
             </div>
-            <input
-              type="range"
-              min="40"
-              max="150"
-              step="0.5"
-              value={weight}
-              onChange={(e) => setWeight(Number(e.target.value))}
-              className="w-full"
-            />
+            <div className="relative mt-12 mb-4">
+              {/* Ruler visual */}
+              <div className="absolute inset-x-0 -top-8 flex justify-between px-[6px] pointer-events-none">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div key={i} className="flex flex-col items-center">
+                    <div className={`w-0.5 rounded-full ${i % 2 === 0 ? "h-4 bg-kinetic-on-surface-variant" : "h-2 bg-kinetic-outline-variant"}`}></div>
+                    {i % 2 === 0 && (
+                      <span className="text-[10px] font-bold text-kinetic-on-surface-variant mt-2 opacity-50">
+                        {40 + i * 10}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <input
+                type="range"
+                min="40"
+                max="150"
+                step="0.5"
+                value={weight}
+                onChange={(e) => setWeight(Number(e.target.value))}
+                className="w-full relative z-10"
+              />
+            </div>
           </section>
         </div>
 

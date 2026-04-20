@@ -28,16 +28,16 @@ const CravingActive = () => {
     { id: "snack", icon: "restaurant", label: "Healthy Snack", animClass: "hover-anim-snack" },
   ];
 
-  // Auto-start countdown on mount
+  // Start countdown only after selecting an action
   useEffect(() => {
-    if (timeRemaining <= 0) return;
+    if (timeRemaining <= 0 || !selectedAction) return;
 
     const interval = setInterval(() => {
       setTimeRemaining((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timeRemaining]);
+  }, [timeRemaining, selectedAction]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -193,8 +193,8 @@ const CravingActive = () => {
 
             {/* Text inside circle */}
             <div className="flex flex-col items-center text-center z-10">
-              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 mb-2">
-                URGE WILL PASS IN
+              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 mb-2 text-center max-w-[120px]">
+                {selectedAction ? "URGE WILL PASS IN" : "SELECT ACTION TO START"}
               </span>
               <span
                 className="text-3xl sm:text-5xl font-black"

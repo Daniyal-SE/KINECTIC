@@ -1,8 +1,45 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ExerciseTracker: React.FC = () => {
   const navigate = useNavigate();
+  const [seconds, setSeconds] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    let interval: any = null;
+    if (isActive) {
+      interval = setInterval(() => {
+        setSeconds((s) => s + 1);
+      }, 1000);
+    } else if (!isActive && seconds !== 0) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, seconds]);
+
+  const toggleTimer = () => setIsActive(!isActive);
+  const stopTimer = () => {
+    setIsActive(false);
+    setSeconds(0);
+  };
+  const restartTimer = () => {
+    setIsActive(true);
+    setSeconds(0);
+  };
+
+  const formatTime = (totalSeconds: number) => {
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const formatFullTime = (totalSeconds: number) => {
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
 
   return (
     <div
@@ -101,45 +138,14 @@ const ExerciseTracker: React.FC = () => {
 
         {/* Center: Kinetic Timer */}
         <section className="flex flex-col items-center py-4 sm:py-8">
-          <div className="relative w-52 h-52 sm:w-72 sm:h-72 flex items-center justify-center">
-            {/* Progress Ring */}
-            <div
-              className="absolute inset-0 rounded-full opacity-20 blur-xl"
-              style={{
-                background:
-                  "conic-gradient(from 180deg at 50% 50%, #6bfb9a 0deg, #4ade80 120deg, #151b2a 240deg)",
-              }}
-            ></div>
-            <svg className="absolute inset-0 w-full h-full -rotate-90">
-              <circle
-                className="text-[#2e3544]"
-                cx="144"
-                cy="144"
-                fill="transparent"
-                r="130"
-                stroke="currentColor"
-                strokeWidth="8"
-              ></circle>
-              <circle
-                className="text-[#6bfb9a]"
-                cx="144"
-                cy="144"
-                fill="transparent"
-                r="130"
-                stroke="currentColor"
-                strokeDasharray="816"
-                strokeDashoffset="200"
-                strokeLinecap="round"
-                strokeWidth="12"
-              ></circle>
-            </svg>
+          <div className="flex flex-col items-center justify-center">
             {/* Timer Display */}
-            <div className="z-10 text-center">
+            <div className="z-10 text-center mb-6">
               <span
-                className="block text-4xl sm:text-6xl font-black tracking-tighter text-[#dce2f6]"
-                style={{ fontFamily: "'Manrope', sans-serif" }}
+                className="block text-6xl sm:text-8xl font-black tracking-tighter text-[#dce2f6]"
+                style={{ fontFamily: "'Manrope', sans-serif", fontVariantNumeric: "tabular-nums" }}
               >
-                24:42
+                {formatTime(seconds)}
               </span>
               <span className="text-sm font-medium uppercase tracking-[0.2em] text-[#6bfb9a] mt-2 block">
                 Current Pace
@@ -147,19 +153,19 @@ const ExerciseTracker: React.FC = () => {
             </div>
           </div>
           {/* Controls */}
-          <div className="flex items-center gap-5 sm:gap-8 mt-8 sm:mt-12">
-            <button className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[#2e3544] flex items-center justify-center text-[#dce2f6] active:scale-90 transition-all">
+          <div className="flex items-center gap-5 sm:gap-8 mt-2">
+            <button onClick={stopTimer} className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[#2e3544] flex items-center justify-center text-[#dce2f6] active:scale-90 transition-all">
               <span className="material-symbols-outlined text-2xl sm:text-3xl">stop</span>
             </button>
-            <button className="w-18 h-18 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#6bfb9a] to-[#4ade80] shadow-[0_0_40px_rgba(74,222,128,0.3)] flex items-center justify-center text-[#003919] active:scale-95 transition-all">
+            <button onClick={toggleTimer} className="w-18 h-18 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#6bfb9a] to-[#4ade80] shadow-[0_0_40px_rgba(74,222,128,0.3)] flex items-center justify-center text-[#003919] active:scale-95 transition-all">
               <span
                 className="material-symbols-outlined text-3xl sm:text-5xl"
                 style={{ fontVariationSettings: "'FILL' 1" }}
               >
-                pause
+                {isActive ? "pause" : "play_arrow"}
               </span>
             </button>
-            <button className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[#2e3544] flex items-center justify-center text-[#dce2f6] active:scale-90 transition-all">
+            <button onClick={restartTimer} className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[#2e3544] flex items-center justify-center text-[#dce2f6] active:scale-90 transition-all">
               <span className="material-symbols-outlined text-2xl sm:text-3xl">
                 refresh
               </span>
@@ -177,7 +183,7 @@ const ExerciseTracker: React.FC = () => {
               className="text-2xl font-bold text-[#dce2f6]"
               style={{ fontFamily: "'Manrope', sans-serif" }}
             >
-              00:24:42
+              {formatFullTime(seconds)}
             </span>
           </div>
           <div className="bg-[#151b2a] rounded-xl p-4 sm:p-6 text-center">

@@ -93,12 +93,6 @@ const WelcomeScreen = () => {
                   arrow_forward
                 </span>
               </button>
-              <div className="flex justify-center">
-                <button className="text-kinetic-on-surface-variant hover:text-kinetic-on-surface font-bold text-sm uppercase tracking-widest transition-colors flex items-center gap-2">
-                  Already have an account?{" "}
-                  <span className="text-kinetic-primary">Sign In</span>
-                </button>
-              </div>
             </div>
           </div>
         </div>
