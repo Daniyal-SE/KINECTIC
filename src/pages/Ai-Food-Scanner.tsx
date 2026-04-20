@@ -6,17 +6,26 @@ const AiFoodScanner: React.FC = () => {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const startCamera = async () => {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Not supported");
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         setIsCameraActive(true);
       }
     } catch (err) {
-      alert("Please allow camera permission to scan food.");
+      console.warn("Live camera failed, falling back to native native file input", err);
+      // Fallback: If getUserMedia fails (permissions or unsupported), trigger the native camera picker if possible.
+      if (cameraInputRef.current) {
+        cameraInputRef.current.click();
+      } else {
+        alert("Camera feature is not supported or permission denied in this browser.");
+      }
     }
   };
 
@@ -48,10 +57,7 @@ const AiFoodScanner: React.FC = () => {
   const handleGallerySelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (!file.type.startsWith("image/")) {
-        alert("Please select an image file.");
-        return;
-      }
+      // Create object URL or use FileReader to support both JPEG/PNG and potentially HEIC (iOS)
       const reader = new FileReader();
       reader.onload = (e) => {
         setCapturedImage(e.target?.result as string);
@@ -115,6 +121,7 @@ const AiFoodScanner: React.FC = () => {
                   ref={videoRef}
                   autoPlay
                   playsInline
+                  muted
                   className="absolute inset-0 w-full h-full object-cover z-0"
                 />
               ) : (
@@ -136,9 +143,10 @@ const AiFoodScanner: React.FC = () => {
               )}
               <div className="relative z-10 flex flex-col items-center gap-4 bg-black/30 p-4 rounded-3xl backdrop-blur-sm">
                 <div className="flex gap-6">
+                  {/* Camera Button */}
                   <div 
                     onClick={(e) => { e.stopPropagation(); capturePhoto(); }}
-                    className={`w-16 h-16 rounded-full flex items-center justify-center text-[#003919] shadow-lg shadow-[#6bfb9a]/20 active:scale-90 transition-transform ${isCameraActive ? "bg-white" : "bg-[#6bfb9a]"}`}
+                    className={`w-16 h-16 rounded-full flex items-center justify-center text-[#003919] shadow-lg shadow-[#6bfb9a]/20 active:scale-90 transition-transform cursor-pointer ${isCameraActive ? "bg-white" : "bg-[#6bfb9a]"}`}
                   >
                     <span
                       className="material-symbols-outlined text-3xl"
@@ -147,21 +155,32 @@ const AiFoodScanner: React.FC = () => {
                       photo_camera
                     </span>
                   </div>
-                  <div
-                    onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-[#4de082] active:scale-90 transition-transform bg-[#2e3544]/80"
+                  
+                  {/* Fallback internal native camera file input triggered programmatically */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    ref={cameraInputRef}
+                    onChange={handleGallerySelect}
+                    className="hidden"
+                  />
+
+                  {/* Gallery Button using strict label encapsulation for flawless mobile invocation */}
+                  <label
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-[#4de082] active:scale-90 transition-transform bg-[#2e3544]/80 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-3xl">
                       gallery_thumbnail
                     </span>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    ref={fileInputRef}
-                    onChange={handleGallerySelect}
-                    className="hidden"
-                  />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleGallerySelect}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
                 {!capturedImage && (
                   <p className="font-medium uppercase tracking-widest text-xs text-[#6dfe9c]">
