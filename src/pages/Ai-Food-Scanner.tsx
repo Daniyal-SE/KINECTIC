@@ -13,18 +13,30 @@ const AiFoodScanner: React.FC = () => {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error("Not supported");
       }
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+      });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        await videoRef.current.play();
         setIsCameraActive(true);
       }
     } catch (err) {
-      console.warn("Live camera failed, falling back to native native file input", err);
+      console.warn(
+        "Live camera failed, falling back to native native file input",
+        err,
+      );
       // Fallback: If getUserMedia fails (permissions or unsupported), trigger the native camera picker if possible.
       if (cameraInputRef.current) {
         cameraInputRef.current.click();
       } else {
-        alert("Camera feature is not supported or permission denied in this browser.");
+        alert(
+          "Camera feature is not supported or permission denied in this browser.",
+        );
       }
     }
   };
@@ -131,7 +143,7 @@ const AiFoodScanner: React.FC = () => {
                   alt="food bowl"
                 />
               )}
-              
+
               {!capturedImage && (
                 <div
                   className="absolute top-1/2 w-full h-[2px] z-10"
@@ -144,8 +156,11 @@ const AiFoodScanner: React.FC = () => {
               <div className="relative z-10 flex flex-col items-center gap-4 bg-black/30 p-4 rounded-3xl backdrop-blur-sm">
                 <div className="flex gap-6">
                   {/* Camera Button */}
-                  <div 
-                    onClick={(e) => { e.stopPropagation(); capturePhoto(); }}
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      capturePhoto();
+                    }}
                     className={`w-16 h-16 rounded-full flex items-center justify-center text-[#003919] shadow-lg shadow-[#6bfb9a]/20 active:scale-90 transition-transform cursor-pointer ${isCameraActive ? "bg-white" : "bg-[#6bfb9a]"}`}
                   >
                     <span
@@ -155,7 +170,7 @@ const AiFoodScanner: React.FC = () => {
                       photo_camera
                     </span>
                   </div>
-                  
+
                   {/* Fallback internal native camera file input triggered programmatically */}
                   <input
                     type="file"
@@ -184,11 +199,19 @@ const AiFoodScanner: React.FC = () => {
                 </div>
                 {!capturedImage && (
                   <p className="font-medium uppercase tracking-widest text-xs text-[#6dfe9c]">
-                    {isCameraActive ? "Tap camera to capture" : "Tap camera to scan"}
+                    {isCameraActive
+                      ? "Tap camera to capture"
+                      : "Tap camera to scan"}
                   </p>
                 )}
                 {capturedImage && (
-                  <button onClick={(e) => { e.stopPropagation(); setCapturedImage(null); }} className="font-bold uppercase tracking-widest text-xs text-white">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCapturedImage(null);
+                    }}
+                    className="font-bold uppercase tracking-widest text-xs text-white"
+                  >
                     Retake Photo
                   </button>
                 )}
