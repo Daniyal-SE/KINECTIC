@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AiFoodScanner: React.FC = () => {
@@ -6,81 +6,67 @@ const AiFoodScanner: React.FC = () => {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [isStartingCamera, setIsStartingCamera] = useState(false);
+
+  // videoRef is always mounted in the DOM — just hidden/shown via CSS.
+  // This ensures videoRef.current is NEVER null when we call startCamera().
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
-  // Holds the stream while we wait for the video element to mount
-  const pendingStreamRef = useRef<MediaStream | null>(null);
-
-  // Once the video element is rendered (isCameraActive → true), attach the stream
-  useEffect(() => {
-    if (isCameraActive && videoRef.current && pendingStreamRef.current) {
-      const video = videoRef.current;
-      const stream = pendingStreamRef.current;
-      video.srcObject = stream;
-      video.play().catch((e) => console.warn("video.play() failed:", e));
-      pendingStreamRef.current = null;
-    }
-  }, [isCameraActive]);
 
   const startCamera = async () => {
+    if (isStartingCamera) return;
     setCameraError(null);
+    setIsStartingCamera(true);
+
     try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error("getUserMedia not supported in this browser");
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("getUserMedia_not_supported");
       }
 
-      let stream: MediaStream | null = null;
+      let stream: MediaStream | undefined;
 
-      // Try back camera first (mobile), fall back to any camera (desktop)
+      // Try back camera first (ideal for mobile), then any camera (desktop)
       try {
         stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: { ideal: "environment" },
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-          },
+          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
         });
       } catch {
-        // Desktop Chrome may refuse 'environment' — retry without facingMode
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
       }
 
-      // Store the stream and flip state → triggers the useEffect to attach it
-      pendingStreamRef.current = stream;
-      setIsCameraActive(true);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Unknown camera error";
-      console.warn("Camera access failed:", message, err);
-
-      // HTTPS note: getUserMedia only works on localhost or HTTPS origins.
-      // If accessed via http:// on a phone or LAN IP, it will always fail.
-      if (
-        message.includes("Permission denied") ||
-        message.includes("NotAllowedError")
-      ) {
-        setCameraError(
-          "Camera permission was denied. Please allow camera access in your browser settings.",
-        );
-      } else if (!window.isSecureContext) {
-        setCameraError(
-          "Camera requires a secure connection (HTTPS). Please access this app over HTTPS or via localhost.",
-        );
-      } else {
-        // Fallback to native file input with capture attribute
-        if (cameraInputRef.current) {
-          cameraInputRef.current.click();
-          return;
-        }
-        setCameraError(
-          "Camera is not available in this browser. Try uploading a photo from your gallery.",
-        );
+      // videoRef.current is always available because the <video> is always in the DOM
+      if (videoRef.current && stream) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+        setIsCameraActive(true);
       }
+    } catch (err: unknown) {
+      const name = err instanceof Error ? err.name : "";
+      const msg = err instanceof Error ? err.message : String(err);
+
+      console.error("[Camera] Error:", name, msg, err);
+
+      if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+        setCameraError("Camera permission was denied. Click the 🔒 icon in your browser's address bar and allow camera access, then try again.");
+      } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+        setCameraError("No camera was found on this device.");
+      } else if (name === "NotReadableError" || name === "TrackStartError") {
+        setCameraError("Your camera is already in use by another application. Please close it and try again.");
+      } else if (!window.isSecureContext) {
+        setCameraError("Camera requires a secure connection. Please access this app via localhost or HTTPS — not an http:// IP address.");
+      } else if (msg === "getUserMedia_not_supported") {
+        // Fallback to native file input with camera capture
+        cameraInputRef.current?.click();
+      } else {
+        setCameraError(`Camera error: ${msg}. Try uploading from your gallery instead.`);
+      }
+    } finally {
+      setIsStartingCamera(false);
     }
   };
 
   const capturePhoto = () => {
-    if (videoRef.current && isCameraActive) {
+    if (isCameraActive && videoRef.current) {
       const canvas = document.createElement("canvas");
       canvas.width = videoRef.current.videoWidth || 640;
       canvas.height = videoRef.current.videoHeight || 480;
@@ -96,38 +82,33 @@ const AiFoodScanner: React.FC = () => {
   };
 
   const stopCamera = () => {
-    if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach((track) => track.stop());
+    if (videoRef.current?.srcObject) {
+      (videoRef.current.srcObject as MediaStream).getTracks().forEach((t) => t.stop());
       videoRef.current.srcObject = null;
-    }
-    if (pendingStreamRef.current) {
-      pendingStreamRef.current.getTracks().forEach((t) => t.stop());
-      pendingStreamRef.current = null;
     }
     setIsCameraActive(false);
     setCameraError(null);
   };
 
-  const handleGallerySelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setCapturedImage(e.target?.result as string);
-        stopCamera();
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setCapturedImage(ev.target?.result as string);
+      stopCamera();
+    };
+    reader.readAsDataURL(file);
+    // Reset so the same file can be selected again
+    e.target.value = "";
   };
 
   return (
     <div
       className="bg-[#0c1321] text-[#dce2f6] font-inter min-h-screen pb-32"
-      style={{
-        fontFamily: "'Inter', sans-serif",
-      }}
+      style={{ fontFamily: "'Inter', sans-serif" }}
     >
+      {/* ── Header ── */}
       <header className="w-full top-0 z-50 sticky bg-[#0c1321] flex justify-between items-center px-6 py-4">
         <div className="flex items-center gap-4">
           <span className="material-symbols-outlined text-[#4ade80] active:scale-95 transition-transform duration-200 cursor-pointer">
@@ -149,7 +130,8 @@ const AiFoodScanner: React.FC = () => {
       </header>
 
       <main className="px-6 pt-8 max-w-2xl mx-auto">
-        <section className="mb-10 text-center md:text-left">
+        {/* ── Title ── */}
+        <section className="mb-6 text-center md:text-left">
           <h2
             className="text-4xl font-extrabold tracking-tight text-[#dce2f6] mb-2"
             style={{ fontFamily: "'Manrope', sans-serif" }}
@@ -161,7 +143,7 @@ const AiFoodScanner: React.FC = () => {
           </p>
         </section>
 
-        {/* Camera error / HTTPS warning banner */}
+        {/* ── Error Banner ── */}
         {cameraError && (
           <div className="mb-6 flex items-start gap-3 bg-red-900/30 border border-red-500/40 rounded-xl px-4 py-3 text-red-300 text-sm">
             <span className="material-symbols-outlined text-red-400 mt-0.5 shrink-0">warning</span>
@@ -170,23 +152,32 @@ const AiFoodScanner: React.FC = () => {
         )}
 
         <div className="grid grid-cols-1 gap-8">
+          {/* ── Scanner Card ── */}
           <div className="relative group">
-            <div className="w-full aspect-square md:aspect-video bg-[#151b2a] rounded-xl flex flex-col items-center justify-center relative overflow-hidden shadow-[0_0_30px_rgba(74,222,128,0.15)] cursor-pointer">
-              {capturedImage ? (
+            <div className="w-full aspect-square md:aspect-video bg-[#151b2a] rounded-xl flex flex-col items-center justify-center relative overflow-hidden shadow-[0_0_30px_rgba(74,222,128,0.15)]">
+
+              {/* Captured photo overlay */}
+              {capturedImage && (
                 <img
                   className="absolute inset-0 w-full h-full object-cover z-0"
                   src={capturedImage}
                   alt="Scanned Food"
                 />
-              ) : isCameraActive ? (
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="absolute inset-0 w-full h-full object-cover z-0"
-                />
-              ) : (
+              )}
+
+              {/* ── VIDEO: always in DOM, visibility controlled by CSS ── */}
+              {/* This is the key fix: the element is always mounted so videoRef.current is never null */}
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="absolute inset-0 w-full h-full object-cover z-0"
+                style={{ display: isCameraActive && !capturedImage ? "block" : "none" }}
+              />
+
+              {/* Placeholder background image (shown when idle) */}
+              {!capturedImage && !isCameraActive && (
                 <img
                   className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity z-0"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_-xEzyFOY1TCD_56mMJu3QZp9clLCg_ZD9A0y0PujHMTNx0dsNwFrR1JTIB0k877ZYhhKuntIB_rmKfPnIq-z-wPici05KfkQHDiMuXz1l4rccv3W1VBMo8ZzdszFrYv61uR-ERsTmOoPIoNViM0gmTJNATGECs1Wvf4uaXjh7IeO0WqZlWOUKdXP6qWQIeTH74c4djypyzKwVFydoculqyvDPHzMT1bWuStNONSrajapXORUF8YDvQlHnO386NWpgTWI-VcPE_AF"
@@ -194,72 +185,86 @@ const AiFoodScanner: React.FC = () => {
                 />
               )}
 
+              {/* Scan line */}
               {!capturedImage && (
                 <div
                   className="absolute top-1/2 w-full h-[2px] z-10"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, transparent, #6bfb9a, transparent)",
-                  }}
-                ></div>
+                  style={{ background: "linear-gradient(90deg, transparent, #6bfb9a, transparent)" }}
+                />
               )}
+
+              {/* Controls overlay */}
               <div className="relative z-10 flex flex-col items-center gap-4 bg-black/30 p-4 rounded-3xl backdrop-blur-sm">
-                <div className="flex gap-6">
-                  {/* Camera Button */}
+                <div className="flex gap-6 items-center">
+
+                  {/* Camera / Capture button */}
                   <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      capturePhoto();
-                    }}
-                    className={`w-16 h-16 rounded-full flex items-center justify-center text-[#003919] shadow-lg shadow-[#6bfb9a]/20 active:scale-90 transition-transform cursor-pointer ${isCameraActive ? "bg-white" : "bg-[#6bfb9a]"}`}
+                    onClick={(e) => { e.stopPropagation(); capturePhoto(); }}
+                    className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg shadow-[#6bfb9a]/20 active:scale-90 transition-all cursor-pointer select-none ${isStartingCamera
+                      ? "bg-[#6bfb9a]/60 text-[#003919]"
+                      : isCameraActive
+                        ? "bg-white text-[#003919]"
+                        : "bg-[#6bfb9a] text-[#003919]"
+                      }`}
                   >
                     <span
                       className="material-symbols-outlined text-3xl"
                       style={{ fontVariationSettings: "'FILL' 1" }}
                     >
-                      photo_camera
+                      {isStartingCamera ? "hourglass_top" : "photo_camera"}
                     </span>
                   </div>
 
-                  {/* Fallback internal native camera file input triggered programmatically */}
+                  {/* Stop camera button (visible when active) */}
+                  {isCameraActive && (
+                    <div
+                      onClick={(e) => { e.stopPropagation(); stopCamera(); }}
+                      className="w-10 h-10 rounded-full flex items-center justify-center bg-[#2e3544]/80 text-[#bccabb] active:scale-90 transition-transform cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-xl">close</span>
+                    </div>
+                  )}
+
+                  {/* Hidden native camera input (fallback for unsupported browsers) */}
                   <input
                     type="file"
                     accept="image/*"
                     capture="environment"
                     ref={cameraInputRef}
-                    onChange={handleGallerySelect}
+                    onChange={handleFileSelect}
                     className="hidden"
                   />
 
-                  {/* Gallery Button using strict label encapsulation for flawless mobile invocation */}
+                  {/* Gallery picker */}
                   <label
                     onClick={(e) => e.stopPropagation()}
                     className="w-16 h-16 rounded-full flex items-center justify-center text-[#4de082] active:scale-90 transition-transform bg-[#2e3544]/80 cursor-pointer"
                   >
-                    <span className="material-symbols-outlined text-3xl">
-                      gallery_thumbnail
-                    </span>
+                    <span className="material-symbols-outlined text-3xl">gallery_thumbnail</span>
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={handleGallerySelect}
+                      onChange={handleFileSelect}
                       className="hidden"
                     />
                   </label>
                 </div>
+
+                {/* Status text */}
                 {!capturedImage && (
                   <p className="font-medium uppercase tracking-widest text-xs text-[#6dfe9c]">
-                    {isCameraActive
-                      ? "Tap camera to capture"
-                      : "Tap camera to scan"}
+                    {isStartingCamera
+                      ? "Opening camera…"
+                      : isCameraActive
+                        ? "Tap camera to capture"
+                        : "Tap camera to scan"}
                   </p>
                 )}
+
+                {/* Retake button */}
                 {capturedImage && (
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCapturedImage(null);
-                    }}
+                    onClick={(e) => { e.stopPropagation(); setCapturedImage(null); }}
                     className="font-bold uppercase tracking-widest text-xs text-white"
                   >
                     Retake Photo
@@ -269,6 +274,7 @@ const AiFoodScanner: React.FC = () => {
             </div>
           </div>
 
+          {/* ── Results Cards ── */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-[#232a39] rounded-xl p-6 relative overflow-hidden">
               <div className="flex justify-between items-start mb-4">
@@ -279,14 +285,10 @@ const AiFoodScanner: React.FC = () => {
                   >
                     Avocado Toast
                   </span>
-                  <p className="text-[#bccabb] font-medium">
-                    Whole Grain / Poached Egg
-                  </p>
+                  <p className="text-[#bccabb] font-medium">Whole Grain / Poached Egg</p>
                 </div>
                 <div className="bg-[#4ade80]/10 px-3 py-1 rounded-full border border-[#4ade80]/20">
-                  <span className="text-[#4ade80] text-xs font-bold uppercase tracking-wider">
-                    Healthy Choice
-                  </span>
+                  <span className="text-[#4ade80] text-xs font-bold uppercase tracking-wider">Healthy Choice</span>
                 </div>
               </div>
               <div className="flex items-end gap-2 mt-6">
@@ -299,85 +301,34 @@ const AiFoodScanner: React.FC = () => {
                 <span className="text-[#bccabb] font-medium mb-1">kcal</span>
               </div>
               <div className="mt-6 flex gap-4">
-                <div className="flex-1 bg-[#2e3544]/50 p-3 rounded-lg text-center">
-                  <p className="text-[10px] uppercase tracking-widest text-[#bccabb] mb-1">
-                    Carbs
-                  </p>
-                  <p
-                    className="font-bold text-[#dce2f6]"
-                    style={{ fontFamily: "'Manrope', sans-serif" }}
-                  >
-                    24g
-                  </p>
-                </div>
-                <div className="flex-1 bg-[#2e3544]/50 p-3 rounded-lg text-center">
-                  <p className="text-[10px] uppercase tracking-widest text-[#bccabb] mb-1">
-                    Protein
-                  </p>
-                  <p
-                    className="font-bold text-[#dce2f6]"
-                    style={{ fontFamily: "'Manrope', sans-serif" }}
-                  >
-                    12g
-                  </p>
-                </div>
-                <div className="flex-1 bg-[#2e3544]/50 p-3 rounded-lg text-center">
-                  <p className="text-[10px] uppercase tracking-widest text-[#bccabb] mb-1">
-                    Fat
-                  </p>
-                  <p
-                    className="font-bold text-[#dce2f6]"
-                    style={{ fontFamily: "'Manrope', sans-serif" }}
-                  >
-                    18g
-                  </p>
-                </div>
+                {["Carbs / 24g", "Protein / 12g", "Fat / 18g"].map((item) => {
+                  const [label, val] = item.split(" / ");
+                  return (
+                    <div key={label} className="flex-1 bg-[#2e3544]/50 p-3 rounded-lg text-center">
+                      <p className="text-[10px] uppercase tracking-widest text-[#bccabb] mb-1">{label}</p>
+                      <p className="font-bold text-[#dce2f6]" style={{ fontFamily: "'Manrope', sans-serif" }}>{val}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
             <div className="flex flex-col gap-4">
-              <div className="bg-[#151b2a] rounded-xl p-5 flex items-center gap-4 hover:bg-[#232a39] transition-colors">
-                <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#2e3544]">
-                  <img
-                    className="w-full h-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDB56t75EXUK6hxr9w-E5kIgUef1M0Pqwf9ebmLCmL9WB49fI77kOpgGlOTzwuc4nVuSAzCimzLopzYG5xd3GcZSPivkKOzkWxa_X3odrTwDzZZCfNYYbSs-c7E-tcAw6nw1x6KQFLcvC9wRcXeP2sQE1nfCIeKA4MyB7DizGJD3oiFcZOLQD9vVdTVsdCH_7mBlMF__kkHmN7Elll-QSGlY7Rgr0JWURpHesSi8YMFr8cblArIIinHNDLnGmBn0sgcYxiYo7_oTlpD"
-                    alt="Smoothie"
-                  />
+              {[
+                { src: "https://lh3.googleusercontent.com/aida-public/AB6AXuDB56t75EXUK6hxr9w-E5kIgUef1M0Pqwf9ebmLCmL9WB49fI77kOpgGlOTzwuc4nVuSAzCimzLopzYG5xd3GcZSPivkKOzkWxa_X3odrTwDzZZCfNYYbSs-c7E-tcAw6nw1x6KQFLcvC9wRcXeP2sQE1nfCIeKA4MyB7DizGJD3oiFcZOLQD9vVdTVsdCH_7mBlMF__kkHmN7Elll-QSGlY7Rgr0JWURpHesSi8YMFr8cblArIIinHNDLnGmBn0sgcYxiYo7_oTlpD", name: "Green Smoothie", time: "2 mins ago" },
+                { src: "https://lh3.googleusercontent.com/aida-public/AB6AXuByCuiIGS09NeOdRLn3zah4BZD2rIrUifq6JAviLHulmINb6oElG5AQHIo8na3r8t5IZiCS7ibZhkjoP5PMXJw-izNyqumgqx_12QI2lIN7HAwziWZzOmwk2ygIuektxRdikXFYe-wOuyV63MJTMM-2SYPZDxkbpeZqygi7BSeJz4Q1fPl2krrvcWiN6pzhP0-lUXejnbjwzs0MFQo9TbC9jWm7xxHEj6x9wv9imfCyKFwtKY3_Z2LTccOnn3geADHQ0LsM8JjA7Ld4", name: "Greek Salad", time: "15 mins ago" },
+              ].map((item) => (
+                <div key={item.name} className="bg-[#151b2a] rounded-xl p-5 flex items-center gap-4 hover:bg-[#232a39] transition-colors cursor-pointer">
+                  <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#2e3544] shrink-0">
+                    <img className="w-full h-full object-cover" src={item.src} alt={item.name} />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-[#dce2f6]" style={{ fontFamily: "'Manrope', sans-serif" }}>{item.name}</h4>
+                    <p className="text-xs text-[#4de082]">Detected {item.time}</p>
+                  </div>
+                  <span className="material-symbols-outlined text-[#bccabb]">chevron_right</span>
                 </div>
-                <div className="flex-1">
-                  <h4
-                    className="font-bold text-[#dce2f6]"
-                    style={{ fontFamily: "'Manrope', sans-serif" }}
-                  >
-                    Green Smoothie
-                  </h4>
-                  <p className="text-xs text-[#4de082]">Detected 2 mins ago</p>
-                </div>
-                <span className="material-symbols-outlined text-[#bccabb]">
-                  chevron_right
-                </span>
-              </div>
-              <div className="bg-[#151b2a] rounded-xl p-5 flex items-center gap-4 hover:bg-[#232a39] transition-colors">
-                <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#2e3544]">
-                  <img
-                    className="w-full h-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuByCuiIGS09NeOdRLn3zah4BZD2rIrUifq6JAviLHulmINb6oElG5AQHIo8na3r8t5IZiCS7ibZhkjoP5PMXJw-izNyqumgqx_12QI2lIN7HAwziWZzOmwk2ygIuektxRdikXFYe-wOuyV63MJTMM-2SYPZDxkbpeZqygi7BSeJz4Q1fPl2krrvcWiN6pzhP0-lUXejnbjwzs0MFQo9TbC9jWm7xxHEj6x9wv9imfCyKFwtKY3_Z2LTccOnn3geADHQ0LsM8JjA7Ld4"
-                    alt="Salad"
-                  />
-                </div>
-                <div className="flex-1">
-                  <h4
-                    className="font-bold text-[#dce2f6]"
-                    style={{ fontFamily: "'Manrope', sans-serif" }}
-                  >
-                    Greek Salad
-                  </h4>
-                  <p className="text-xs text-[#4de082]">Detected 15 mins ago</p>
-                </div>
-                <span className="material-symbols-outlined text-[#bccabb]">
-                  chevron_right
-                </span>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -387,42 +338,23 @@ const AiFoodScanner: React.FC = () => {
         </div>
       </main>
 
+      {/* ── Bottom Nav ── */}
       <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-6 pb-8 pt-4 bg-[#151b2a]/80 backdrop-blur-xl z-50 rounded-t-[1.5rem] shadow-[0_-16px_32px_rgba(74,222,128,0.06)]">
-        <div
-          onClick={() => navigate("/dashboard")}
-          className="flex flex-col items-center justify-center text-slate-500 py-2 hover:text-[#4ADE80] transition-colors active:scale-90 transition-all duration-300 ease-out cursor-pointer"
-        >
+        <div onClick={() => navigate("/dashboard")} className="flex flex-col items-center justify-center text-slate-500 py-2 hover:text-[#4ADE80] transition-colors active:scale-90 duration-300 ease-out cursor-pointer">
           <span className="material-symbols-outlined">timer</span>
-          <span className="font-medium text-[10px] uppercase tracking-widest mt-1">
-            Focus
-          </span>
+          <span className="font-medium text-[10px] uppercase tracking-widest mt-1">Focus</span>
         </div>
-        <div
-          onClick={() => navigate("/ai-food-scanner")}
-          className="flex flex-col items-center justify-center bg-gradient-to-br from-[#6bfb9a] to-[#4ade80] text-[#0c1321] rounded-[1.5rem] px-5 py-2 active:scale-90 transition-all duration-300 ease-out cursor-pointer"
-        >
+        <div onClick={() => navigate("/ai-food-scanner")} className="flex flex-col items-center justify-center bg-gradient-to-br from-[#6bfb9a] to-[#4ade80] text-[#0c1321] rounded-[1.5rem] px-5 py-2 active:scale-90 duration-300 ease-out cursor-pointer">
           <span className="material-symbols-outlined">install_mobile</span>
-          <span className="font-medium text-[10px] uppercase tracking-widest mt-1">
-            Scan
-          </span>
+          <span className="font-medium text-[10px] uppercase tracking-widest mt-1">Scan</span>
         </div>
-        <div
-          onClick={() => navigate("/exercise-tracker")}
-          className="flex flex-col items-center justify-center text-slate-500 py-2 hover:text-[#4ADE80] transition-colors active:scale-90 transition-all duration-300 ease-out cursor-pointer"
-        >
+        <div onClick={() => navigate("/exercise-tracker")} className="flex flex-col items-center justify-center text-slate-500 py-2 hover:text-[#4ADE80] transition-colors active:scale-90 duration-300 ease-out cursor-pointer">
           <span className="material-symbols-outlined">fitness_center</span>
-          <span className="font-medium text-[10px] uppercase tracking-widest mt-1">
-            Train
-          </span>
+          <span className="font-medium text-[10px] uppercase tracking-widest mt-1">Train</span>
         </div>
-        <div
-          onClick={() => navigate("/calorie-detail-breakdown")}
-          className="flex flex-col items-center justify-center text-slate-500 py-2 hover:text-[#4ADE80] transition-colors active:scale-90 transition-all duration-300 ease-out cursor-pointer"
-        >
+        <div onClick={() => navigate("/calorie-detail-breakdown")} className="flex flex-col items-center justify-center text-slate-500 py-2 hover:text-[#4ADE80] transition-colors active:scale-90 duration-300 ease-out cursor-pointer">
           <span className="material-symbols-outlined">analytics</span>
-          <span className="font-medium text-[10px] uppercase tracking-widest mt-1">
-            Stats
-          </span>
+          <span className="font-medium text-[10px] uppercase tracking-widest mt-1">Stats</span>
         </div>
       </nav>
     </div>
