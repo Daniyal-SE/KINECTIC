@@ -1,41 +1,79 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AiFoodScanner: React.FC = () => {
   const navigate = useNavigate();
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  // Holds the stream while we wait for the video element to mount
+  const pendingStreamRef = useRef<MediaStream | null>(null);
+
+  // Once the video element is rendered (isCameraActive → true), attach the stream
+  useEffect(() => {
+    if (isCameraActive && videoRef.current && pendingStreamRef.current) {
+      const video = videoRef.current;
+      const stream = pendingStreamRef.current;
+      video.srcObject = stream;
+      video.play().catch((e) => console.warn("video.play() failed:", e));
+      pendingStreamRef.current = null;
+    }
+  }, [isCameraActive]);
 
   const startCamera = async () => {
+    setCameraError(null);
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error("Not supported");
+        throw new Error("getUserMedia not supported in this browser");
       }
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: "environment" },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-      });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-        setIsCameraActive(true);
+
+      let stream: MediaStream | null = null;
+
+      // Try back camera first (mobile), fall back to any camera (desktop)
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+        });
+      } catch {
+        // Desktop Chrome may refuse 'environment' — retry without facingMode
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
       }
-    } catch (err) {
-      console.warn(
-        "Live camera failed, falling back to native native file input",
-        err,
-      );
-      // Fallback: If getUserMedia fails (permissions or unsupported), trigger the native camera picker if possible.
-      if (cameraInputRef.current) {
-        cameraInputRef.current.click();
+
+      // Store the stream and flip state → triggers the useEffect to attach it
+      pendingStreamRef.current = stream;
+      setIsCameraActive(true);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Unknown camera error";
+      console.warn("Camera access failed:", message, err);
+
+      // HTTPS note: getUserMedia only works on localhost or HTTPS origins.
+      // If accessed via http:// on a phone or LAN IP, it will always fail.
+      if (
+        message.includes("Permission denied") ||
+        message.includes("NotAllowedError")
+      ) {
+        setCameraError(
+          "Camera permission was denied. Please allow camera access in your browser settings.",
+        );
+      } else if (!window.isSecureContext) {
+        setCameraError(
+          "Camera requires a secure connection (HTTPS). Please access this app over HTTPS or via localhost.",
+        );
       } else {
-        alert(
-          "Camera feature is not supported or permission denied in this browser.",
+        // Fallback to native file input with capture attribute
+        if (cameraInputRef.current) {
+          cameraInputRef.current.click();
+          return;
+        }
+        setCameraError(
+          "Camera is not available in this browser. Try uploading a photo from your gallery.",
         );
       }
     }
@@ -44,8 +82,8 @@ const AiFoodScanner: React.FC = () => {
   const capturePhoto = () => {
     if (videoRef.current && isCameraActive) {
       const canvas = document.createElement("canvas");
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
+      canvas.width = videoRef.current.videoWidth || 640;
+      canvas.height = videoRef.current.videoHeight || 480;
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.drawImage(videoRef.current, 0, 0);
@@ -62,14 +100,18 @@ const AiFoodScanner: React.FC = () => {
       const stream = videoRef.current.srcObject as MediaStream;
       stream.getTracks().forEach((track) => track.stop());
       videoRef.current.srcObject = null;
-      setIsCameraActive(false);
     }
+    if (pendingStreamRef.current) {
+      pendingStreamRef.current.getTracks().forEach((t) => t.stop());
+      pendingStreamRef.current = null;
+    }
+    setIsCameraActive(false);
+    setCameraError(null);
   };
 
   const handleGallerySelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Create object URL or use FileReader to support both JPEG/PNG and potentially HEIC (iOS)
       const reader = new FileReader();
       reader.onload = (e) => {
         setCapturedImage(e.target?.result as string);
@@ -118,6 +160,14 @@ const AiFoodScanner: React.FC = () => {
             Upload or capture your food to analyze nutrients.
           </p>
         </section>
+
+        {/* Camera error / HTTPS warning banner */}
+        {cameraError && (
+          <div className="mb-6 flex items-start gap-3 bg-red-900/30 border border-red-500/40 rounded-xl px-4 py-3 text-red-300 text-sm">
+            <span className="material-symbols-outlined text-red-400 mt-0.5 shrink-0">warning</span>
+            <span>{cameraError}</span>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 gap-8">
           <div className="relative group">

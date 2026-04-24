@@ -22,6 +22,7 @@ import PremiumUpgrade from "./pages/PremiumUpgrade";
 import SettingsScreen from "./pages/SettingsScreen";
 import ExerciseTracker from "./pages/Exercise-tracker";
 import CalorieDetailBreakdown from "./pages/calorie_detail_breakdown";
+import AiFoodScanner from "./pages/Ai-Food-Scanner";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ const App = () => (
           <Route path="/settings" element={<SettingsScreen />} />
           <Route path="/exercise-tracker" element={<ExerciseTracker />} />
           <Route path="/calorie-detail-breakdown" element={<CalorieDetailBreakdown />} />
+          <Route path="/ai-food-scanner" element={<AiFoodScanner />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
