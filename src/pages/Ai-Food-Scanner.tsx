@@ -1,92 +1,37 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 
 const AiFoodScanner: React.FC = () => {
   const navigate = useNavigate();
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [isCameraActive, setIsCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
-  const [isStartingCamera, setIsStartingCamera] = useState(false);
-
-  // videoRef is always mounted in the DOM — just hidden/shown via CSS.
-  // This ensures videoRef.current is NEVER null when we call startCamera().
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [isStartingCamera, setIsStartingCamera] = useState(false);
 
-  const startCamera = async () => {
-    if (isStartingCamera) return;
+
+  const openCamera = async () => {
     setCameraError(null);
-    setIsStartingCamera(true);
-
     try {
-      if (!navigator.mediaDevices?.getUserMedia) {
-        throw new Error("getUserMedia_not_supported");
+      const image = await Camera.getPhoto({
+        quality: 90,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Camera,
+      });
+
+      if (image?.dataUrl) {
+        setCapturedImage(image.dataUrl);
       }
-
-      let stream: MediaStream | undefined;
-
-      // Try back camera first (ideal for mobile), then any camera (desktop)
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
-        });
-      } catch {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      }
-
-      // videoRef.current is always available because the <video> is always in the DOM
-      if (videoRef.current && stream) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-        setIsCameraActive(true);
-      }
-    } catch (err: unknown) {
-      const name = err instanceof Error ? err.name : "";
-      const msg = err instanceof Error ? err.message : String(err);
-
-      console.error("[Camera] Error:", name, msg, err);
-
-      if (name === "NotAllowedError" || name === "PermissionDeniedError") {
-        setCameraError("Camera permission was denied. Click the 🔒 icon in your browser's address bar and allow camera access, then try again.");
-      } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
-        setCameraError("No camera was found on this device.");
-      } else if (name === "NotReadableError" || name === "TrackStartError") {
-        setCameraError("Your camera is already in use by another application. Please close it and try again.");
-      } else if (!window.isSecureContext) {
-        setCameraError("Camera requires a secure connection. Please access this app via localhost or HTTPS — not an http:// IP address.");
-      } else if (msg === "getUserMedia_not_supported") {
-        // Fallback to native file input with camera capture
-        cameraInputRef.current?.click();
-      } else {
-        setCameraError(`Camera error: ${msg}. Try uploading from your gallery instead.`);
-      }
-    } finally {
-      setIsStartingCamera(false);
-    }
-  };
-
-  const capturePhoto = () => {
-    if (isCameraActive && videoRef.current) {
-      const canvas = document.createElement("canvas");
-      canvas.width = videoRef.current.videoWidth || 640;
-      canvas.height = videoRef.current.videoHeight || 480;
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.drawImage(videoRef.current, 0, 0);
-        setCapturedImage(canvas.toDataURL("image/jpeg"));
-      }
-      stopCamera();
-    } else {
-      startCamera();
+    } catch (err: any) {
+      console.error(err);
+      setCameraError("Camera access failed or permission denied.");
     }
   };
 
   const stopCamera = () => {
-    if (videoRef.current?.srcObject) {
-      (videoRef.current.srcObject as MediaStream).getTracks().forEach((t) => t.stop());
-      videoRef.current.srcObject = null;
-    }
-    setIsCameraActive(false);
+
     setCameraError(null);
   };
 
@@ -199,7 +144,7 @@ const AiFoodScanner: React.FC = () => {
 
                   {/* Camera / Capture button */}
                   <div
-                    onClick={(e) => { e.stopPropagation(); capturePhoto(); }}
+                    onClick={(e) => { e.stopPropagation(); openCamera(); }}
                     className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg shadow-[#6bfb9a]/20 active:scale-90 transition-all cursor-pointer select-none ${isStartingCamera
                       ? "bg-[#6bfb9a]/60 text-[#003919]"
                       : isCameraActive
