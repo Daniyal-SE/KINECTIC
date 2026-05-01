@@ -15,6 +15,7 @@ const AiFoodScanner: React.FC = () => {
 
   const startCamera = async () => {
     if (isStartingCamera) return;
+    console.log("Secure Context:", window.isSecureContext);
     setCameraError(null);
     setIsStartingCamera(true);
 
@@ -22,6 +23,10 @@ const AiFoodScanner: React.FC = () => {
       if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error("getUserMedia_not_supported");
       }
+
+      // 🔥 Force permission request first (fixes mobile + Vercel issues)
+      const permission = await navigator.mediaDevices.getUserMedia({ video: true });
+      permission.getTracks().forEach(track => track.stop());
 
       let stream: MediaStream | undefined;
 
@@ -37,6 +42,12 @@ const AiFoodScanner: React.FC = () => {
       // videoRef.current is always available because the <video> is always in the DOM
       if (videoRef.current && stream) {
         videoRef.current.srcObject = stream;
+
+        // 🔥 Wait until video is actually ready
+        await new Promise((resolve) => {
+          videoRef.current!.onloadedmetadata = () => resolve(true);
+        });
+
         await videoRef.current.play();
         setIsCameraActive(true);
       }
@@ -68,8 +79,16 @@ const AiFoodScanner: React.FC = () => {
   const capturePhoto = () => {
     if (isCameraActive && videoRef.current) {
       const canvas = document.createElement("canvas");
-      canvas.width = videoRef.current.videoWidth || 640;
-      canvas.height = videoRef.current.videoHeight || 480;
+      const width = videoRef.current.videoWidth;
+      const height = videoRef.current.videoHeight;
+
+      if (!width || !height) {
+        console.warn("Video not ready yet");
+        return;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.drawImage(videoRef.current, 0, 0);
@@ -167,14 +186,15 @@ const AiFoodScanner: React.FC = () => {
 
               {/* ── VIDEO: always in DOM, visibility controlled by CSS ── */}
               {/* This is the key fix: the element is always mounted so videoRef.current is never null */}
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className="absolute inset-0 w-full h-full object-cover z-0"
-                style={{ display: isCameraActive && !capturedImage ? "block" : "none" }}
-              />
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  controls={false}
+                  className="absolute inset-0 w-full h-full object-cover z-0"
+                  style={{ display: isCameraActive && !capturedImage ? "block" : "none" }}
+                />
 
               {/* Placeholder background image (shown when idle) */}
               {!capturedImage && !isCameraActive && (
